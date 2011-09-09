@@ -1,5 +1,5 @@
 // The template code for Assignment 2 
-//
+// Jonathan, Mark
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +14,8 @@
 
 // Global variables
 int window_width, window_height;    // Window dimensions
-int PERSPECTIVE = OFF;
+int PERSPECTIVE = ON;
+int AXIS = ON;
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -157,46 +158,33 @@ void	display(void)
     if (PERSPECTIVE) {
 		glLoadIdentity();
 		// Set the camera position, orientation and target
-		gluLookAt(0,0,5, 0,0,0, 0,1,0);
+		gluLookAt(0,5,5, 0,-2,0, 0,1,0);
     }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Draw a red rectangle
-    glColor3f(1,0,0);
-	glBegin(GL_POLYGON);
-		glVertex3f(0.8,0.8,-0.8);
-		glVertex3f(0.8,-0.8,-0.8);
-		glVertex3f(-0.8,-0.8,-0.0);
-		glVertex3f(-0.8,0.8,-0.0);
-    glEnd();
+	if(AXIS){
+    // Draw a red line
+		glColor3f(1,0,0);
+		glBegin(GL_LINES);
+			glVertex3f(0.0,0.0,0.0);
+			glVertex3f(0.0,0.0,1.0);
+		glEnd();
 
-    // Draw a blue tetraheadron
-    glColor3f(0,0,1);
-    glBegin(GL_TRIANGLES);
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.0,-0.4,-0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(-0.8,-0.4,0.8);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-    glEnd();
+	//Draw a blue Line
+		glColor3f(0,0,1);
+		glBegin(GL_LINES);
+			glVertex3f(0.0,0.0,0.0);
+			glVertex3f(0.0,1.0,0.0);
+		glEnd();
 
     // Draw a green line
-    glColor3f(0,1,0);
-    glBegin(GL_LINES);
-		glVertex3f(1.8,1.8,0.0);
-		glVertex3f(0.1,0.1,0.0);
-    glEnd();
+		glColor3f(0,1,0);
+		glBegin(GL_LINES);
+			glVertex3f(1.0,0.0,0.0);
+			glVertex3f(0.0,0.0,0.0);
+		glEnd();
+	}
 
     // (Note that the origin is lower left corner)
     // (Note also that the window spans (0,1) )
@@ -250,7 +238,12 @@ void	keyboard(unsigned char key, int x, int y)
     case '':                           /* Quit */
 		exit(1);
 		break;
-    case 'p':
+    case 's':
+		if(AXIS)
+			AXIS = OFF;
+		else
+			AXIS = ON;
+		break;
     case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
         if(PERSPECTIVE) {
