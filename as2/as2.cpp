@@ -1,5 +1,5 @@
 // The template code for Assignment 2 
-//
+// Jonathan, Mark
 
 #include <stdio.h>
 #include <stdlib.h>
