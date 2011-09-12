@@ -30,6 +30,8 @@ int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = ON;
 int AXIS = ON;
 int MOUSE = -1;
+int DIRECTION = -1;
+float previousX,previousY=150.;
 
 //change these to change starting orientation/view
 float rho = 5.;
@@ -256,8 +258,7 @@ void	mouseButton(int button,int state,int x,int y)
 	if (button == MIDDLEM) MOUSE = MIDDLEM;
 	if (button == RIGHTM) MOUSE = RIGHTM;
 	if (previousX-x>0) DIRECTION = DOWN; else DIRECTION = UP;
-	if (previousY-y>0) DIRECTION = RIGHT; else DIRECTION = LEFT;
-	
+	//if (previousY-y>0) DIRECTION = RIGHT; else DIRECTION = LEFT;
 }
 
 //This function is called whenever the mouse is moved with a mouse button held down.
@@ -265,9 +266,29 @@ void	mouseButton(int button,int state,int x,int y)
 void	mouseMotion(int x, int y)
 {
 	printf("Mouse is at %d, %d with button %d\n", x,y,MOUSE);
-	if (MOUSE==RIGHTM)
-	{
-
+	if (MOUSE==RIGHTM){
+		//adjust rho to zoom in and out
+		if(DIRECTION==UP) rho++;
+		else if(DIRECTION==DOWN) rho--;
+	}
+	else if (MOUSE==LEFTM){
+		switch(DIRECTION){
+		case UP:
+			phi*=1.001;
+			break;
+		case DOWN:
+			phi*=0.999;
+			break;
+		case LEFT:
+			theta*=1.001;
+			break;
+		case RIGHT:
+			theta*=0.999;
+			break;
+		default: break;
+		}
+	}
+	display();
 }
 
 // This function is called whenever there is a keyboard input
