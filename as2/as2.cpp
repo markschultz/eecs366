@@ -4,7 +4,6 @@
 //use constants from math.h
 #define _USE_MATH_DEFINES
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "glut.h"
@@ -14,6 +13,12 @@
 
 #define ON 1
 #define OFF 0
+//#define LEFTM 0
+//#define MIDDLEM 1
+//#define RIGHTM 2
+
+enum {LEFTM,MIDDLEM,RIGHTM};
+enum {UP,RIGHT,DOWN,LEFT};
 
 typedef struct CameraPos{
 	float x,y,z; //camera pos
@@ -24,6 +29,9 @@ typedef struct CameraPos{
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = ON;
 int AXIS = ON;
+int MOUSE = -1;
+
+//change these to change starting orientation/view
 float rho = 5.;
 float phi = 0.;
 float theta = 0.;
@@ -35,7 +43,7 @@ float toRads(float degrees)
 	return degrees*(M_PI/180.);
 }
 
-// Vertex and Face data structure sued in the mesh reader
+// Vertex and Face data structure used in the mesh reader
 // Feel free to change them
 typedef struct _point {
   float x,y,z;
@@ -164,7 +172,6 @@ void meshReader (char *filename,int sign)
 }
 
 
-
 // The display function. It is called whenever the window needs
 // redrawing (ie: overlapping window moves, resize, maximize)
 // You should redraw your polygons here
@@ -175,8 +182,19 @@ void	display(void)
    
     if (PERSPECTIVE) {
 		glLoadIdentity();
+		//calculate carthesian coords from spherical coords
+		c.x = rho*sin(toRads(phi))*cos(toRads(theta));
+		c.y = rho*sin(toRads(phi))*sin(toRads(theta));
+		c.z = rho*cos(toRads(phi));
+		//always looking at origin
+		c.lx = c.ly = c.lz = 0.;
+		//adjust up
+		c.ux = cos(toRads(theta));
+		c.uy = sin(toRads(theta));
+		c.uz = 1.;
 		// Set the camera position, orientation and target
-		gluLookAt(0,5,5, 0,-2,0, 0,1,0);
+		gluLookAt(c.x,c.y,c.z,  c.lx,c.ly,c.lz,  c.ux,c.uy,c.uz);
+		//gluLookAt(0,5,5, 0,-2,0, 0,1,0);
     }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -210,7 +228,6 @@ void	display(void)
     glutSwapBuffers();
 }
 
-
 // This function is called whenever the window is resized. 
 // Parameters are the new dimentions of the window
 void	resize(int x,int y)
@@ -228,7 +245,6 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
-
 // This function is called whenever the mouse is pressed or released
 // button is a number 0 to 2 designating the button
 // state is 1 for release 0 for press event
@@ -236,16 +252,23 @@ void	resize(int x,int y)
 void	mouseButton(int button,int state,int x,int y)
 {
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
+	if (button == LEFTM) MOUSE = LEFTM;
+	if (button == MIDDLEM) MOUSE = MIDDLEM;
+	if (button == RIGHTM) MOUSE = RIGHTM;
+	if (previousX-x>0) DIRECTION = DOWN; else DIRECTION = UP;
+	if (previousY-y>0) DIRECTION = RIGHT; else DIRECTION = LEFT;
+	
 }
-
 
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
 {
-	printf("Mouse is at %d, %d\n", x,y);
-}
+	printf("Mouse is at %d, %d with button %d\n", x,y,MOUSE);
+	if (MOUSE==RIGHTM)
+	{
 
+}
 
 // This function is called whenever there is a keyboard input
 // key is the ASCII value of the key pressed
@@ -291,7 +314,6 @@ void	keyboard(unsigned char key, int x, int y)
     // Schedule a new display event
     glutPostRedisplay();
 }
-
 
 // Here's the main
 int main(int argc, char* argv[])
