@@ -235,7 +235,7 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'q':                           /* Quit */
+    case 'q':                           /* Quit */
 		exit(1);
 		break;
     case 's':
