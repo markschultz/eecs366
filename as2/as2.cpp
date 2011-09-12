@@ -238,7 +238,7 @@ void	keyboard(unsigned char key, int x, int y)
     case 'q':                           /* Quit */
 		exit(1);
 		break;
-    case 's':
+    case 'a':
 		if(AXIS)
 			AXIS = OFF;
 		else
