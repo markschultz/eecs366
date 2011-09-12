@@ -183,7 +183,17 @@ void	display(void)
 		glBegin(GL_LINES);
 			glVertex3f(1.0,0.0,0.0);
 			glVertex3f(0.0,0.0,0.0);
+		glEnd();		
+
+		glColor3f(1,0,0);
+		glBegin(GL_POINTS);
+			for(int i = 0; i < verts; i++)
+			{
+				glVertex3f(vertList[i].x, vertList[i].y, vertList[i].z);
+				
+			}
 		glEnd();
+
 	}
 
     // (Note that the origin is lower left corner)
@@ -235,7 +245,7 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'q':                           /* Quit */
+    case 'k':                           /* Quit */
 		exit(1);
 		break;
     case 's':
@@ -278,7 +288,8 @@ void	keyboard(unsigned char key, int x, int y)
 // Here's the main
 int main(int argc, char* argv[])
 {
-    // Initialize GLUT
+    // Initialize GLUT 
+	meshReader("Shape.obj", 1);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Assignment 2 Template (orthogonal)");
@@ -287,6 +298,7 @@ int main(int argc, char* argv[])
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMotion);
     glutKeyboardFunc(keyboard);
+	
 
     // Initialize GL
     glMatrixMode(GL_PROJECTION);
