@@ -1,6 +1,10 @@
 // The template code for Assignment 2 
 // Jonathan, Mark
 
+//use constants from math.h
+#define _USE_MATH_DEFINES
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "glut.h"
@@ -11,11 +15,25 @@
 #define ON 1
 #define OFF 0
 
-
+typedef struct CameraPos{
+	float x,y,z; //camera pos
+	float lx,ly,lz; //looking at
+	float ux,uy,uz; //up vertex
+};
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = ON;
 int AXIS = ON;
+float rho = 5.;
+float phi = 0.;
+float theta = 0.;
+CameraPos c;
+
+//simple helper func convert degrees to radians for maths
+float toRads(float degrees)
+{
+	return degrees*(M_PI/180.);
+}
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
