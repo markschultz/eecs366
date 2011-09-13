@@ -201,12 +201,17 @@ void	display(void)
 	}
 	if(Lines) {
 		glColor3f(1,0,0);
-		glBegin(GL_LINES);	
-			for(int i = 0; i < verts; i++)
-			{
-				glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);				
-			}
-		glEnd();
+		for(int i = 0; i < verts; i++)
+		{
+			glBegin(GL_TRIANGLES);	
+
+			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
+			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
+			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
+			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glEnd();
+		}
+		
 	}
 
     // (Note that the origin is lower left corner)
@@ -258,7 +263,7 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'k':                           /* Quit */
+    case 'q':                           /* Quit */
 		exit(1);
 		break;
     case 'a':
