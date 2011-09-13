@@ -16,6 +16,9 @@
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = ON;
 int AXIS = ON;
+int Points = ON;
+int Lines = OFF;
+int Solid = OFF;
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -183,17 +186,27 @@ void	display(void)
 		glBegin(GL_LINES);
 			glVertex3f(1.0,0.0,0.0);
 			glVertex3f(0.0,0.0,0.0);
-		glEnd();		
+		glEnd();
+	}
+
+	if(Points)	{
 
 		glColor3f(1,0,0);
 		glBegin(GL_POINTS);
 			for(int i = 0; i < verts; i++)
 			{
-				glVertex3f(vertList[i].x, vertList[i].y, vertList[i].z);
-				
+				glVertex3f(vertList[i].x, vertList[i].y, vertList[i].z);				
 			}
 		glEnd();
-
+	}
+	if(Lines) {
+		glColor3f(1,0,0);
+		glBegin(GL_LINES);	
+			for(int i = 0; i < verts; i++)
+			{
+				glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);				
+			}
+		glEnd();
 	}
 
     // (Note that the origin is lower left corner)
@@ -248,11 +261,21 @@ void	keyboard(unsigned char key, int x, int y)
     case 'k':                           /* Quit */
 		exit(1);
 		break;
-    case 's':
+    case 'a':
 		if(AXIS)
 			AXIS = OFF;
 		else
 			AXIS = ON;
+		break;
+	case 's':
+		if(Points){
+			Lines = ON;
+			Points = OFF;
+		}
+		else if(Lines){
+			Points = ON;
+			Lines = OFF;
+		}
 		break;
     case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
