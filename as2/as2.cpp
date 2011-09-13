@@ -410,7 +410,7 @@ void	keyboard(unsigned char key, int x, int y)
 int main(int argc, char* argv[])
 {
     // Initialize GLUT 
-	meshReader("Cylinder.obj", 1);
+	meshReader("Shape.obj", 1);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Assignment 2 Template (orthogonal)");
