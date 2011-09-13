@@ -203,33 +203,32 @@ void	display(void)
 		//gluLookAt(0,5,5, 0,-2,0, 0,1,0);
     }
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
 
 	if(AXIS){
     // Draw a red line
 		glColor3f(1,0,0);
 		glBegin(GL_LINES);
 			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,0.0,1.0);
+			glVertex3f(0.0,0.0,10.0);
 		glEnd();
 
 	//Draw a blue Line
 		glColor3f(0,0,1);
 		glBegin(GL_LINES);
 			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,1.0,0.0);
+			glVertex3f(0.0,10.0,0.0);
 		glEnd();
 
     // Draw a green line
 		glColor3f(0,1,0);
 		glBegin(GL_LINES);
-			glVertex3f(1.0,0.0,0.0);
+			glVertex3f(10.0,0.0,0.0);
 			glVertex3f(0.0,0.0,0.0);
 		glEnd();
 	}
 
 	if(Points)	{
-
 		glColor3f(1,0,0);
 		glBegin(GL_POINTS);
 			for(int i = 0; i < verts; i++)
@@ -239,14 +238,31 @@ void	display(void)
 		glEnd();
 	}
 	if(Lines) {
-		glColor3f(1,0,0);
-		for(int i = 0; i < verts; i++)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		for(int i = 0; i < faces; i++)
 		{
-			glBegin(GL_TRIANGLES);	
-
+			glBegin(GL_TRIANGLE_FAN);	
+			glColor3f(1.0f,0.0f,0.0f);
 			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
 			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
+			glColor3f(1.0f,0.0f,0.0f);
 			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glEnd();
+		}
+	}
+	if(Solid) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		for(int i = 0; i < faces; i++)
+		{
+			glBegin(GL_TRIANGLE_FAN);	
+			glColor3f(1.0f,0.0f,0.0f);
+			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
+			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
+			glColor3f(1.0f,0.0f,0.0f);
 			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
 			glEnd();
 		}
@@ -349,8 +365,12 @@ void	keyboard(unsigned char key, int x, int y)
 			Points = OFF;
 		}
 		else if(Lines){
-			Points = ON;
+			Solid = ON;
 			Lines = OFF;
+		}
+		else{
+			Solid = OFF;
+			Points = ON;
 		}
 		break;
     case 'P':
