@@ -312,11 +312,7 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-<<<<<<< HEAD
-    case 'k':                           /* Quit */
-=======
     case 'q':                           /* Quit */
->>>>>>> 16053b9e3379baa365f6aaf26f28e521c5401227
 		exit(1);
 		break;
     case 'a':
