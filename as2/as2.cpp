@@ -30,8 +30,9 @@ int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = ON;
 int AXIS = ON;
 int MOUSE = -1;
-int DIRECTION = -1;
-float previousX,previousY=150.;
+int VERTICAL = -1;
+int HORIZONTAL = -1;
+int previousX=150,previousY=150;
 
 //change these to change starting orientation/view
 float rho = 5.;
@@ -257,22 +258,26 @@ void	mouseButton(int button,int state,int x,int y)
 	if (button == LEFTM) MOUSE = LEFTM;
 	if (button == MIDDLEM) MOUSE = MIDDLEM;
 	if (button == RIGHTM) MOUSE = RIGHTM;
-	if (previousX-x>0) DIRECTION = DOWN; else DIRECTION = UP;
-	//if (previousY-y>0) DIRECTION = RIGHT; else DIRECTION = LEFT;
 }
 
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
 {
-	printf("Mouse is at %d, %d with button %d\n", x,y,MOUSE);
+	
+	if (previousY-y>0) VERTICAL = UP; else VERTICAL = DOWN;
+	if (previousX-x>0) HORIZONTAL = LEFT; else HORIZONTAL = RIGHT;
+	printf("Mouse is at %d, %d with button %d in direction %d,%d\n", x,y,MOUSE,VERTICAL,HORIZONTAL);
+	previousX=x;
+	previousY=y;
+
 	if (MOUSE==RIGHTM){
 		//adjust rho to zoom in and out
-		if(DIRECTION==UP) rho++;
-		else if(DIRECTION==DOWN) rho--;
+		if(VERTICAL==UP) rho+=.1;
+		else if(VERTICAL==DOWN) rho-=.1;
 	}
 	else if (MOUSE==LEFTM){
-		switch(DIRECTION){
+		switch(HORIZONTAL){
 		case UP:
 			phi*=1.001;
 			break;
