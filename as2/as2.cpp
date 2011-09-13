@@ -56,8 +56,8 @@ typedef struct _point {
 } point;
 
 typedef struct _faceStruct {
-  int v1,v2,v3;
-  int n1,n2,n3;
+  int v1,v2,v3,v4;
+  int n1,n2,n3,n4;
 } faceStruct;
 
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
@@ -72,7 +72,7 @@ void meshReader (char *filename,int sign)
   int i;
   char letter;
   point v1,v2,crossP;
-  int ix,iy,iz;
+  int ix,iy,iz,ii;
   int *normCount;
   FILE *fp;
 
@@ -120,10 +120,11 @@ void meshReader (char *filename,int sign)
   // Read the faces
   for(i = 0;i < faces;i++)
     {
-      fscanf(fp,"%c %d %d %d\n",&letter,&ix,&iy,&iz);
+      fscanf(fp,"%c %d %d %d %d\n",&letter,&ix,&iy,&iz,&ii);
       faceList[i].v1 = ix - 1;
       faceList[i].v2 = iy - 1;
       faceList[i].v3 = iz - 1;
+	  faceList[i].v4 = ii - 1;
     }
   fclose(fp);
 
@@ -241,7 +242,7 @@ void	display(void)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		for(int i = 0; i < faces; i++)
 		{
-			glBegin(GL_TRIANGLE_FAN);	
+			glBegin(GL_QUADS);	
 			glColor3f(1.0f,0.0f,0.0f);
 			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
 			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
@@ -249,6 +250,7 @@ void	display(void)
 			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
 			glColor3f(1.0f,0.0f,0.0f);
 			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glVertex3f(vertList[faceList[i].v4].x, vertList[faceList[i].v4].y, vertList[faceList[i].v4].z);
 			glEnd();
 		}
 	}
@@ -264,6 +266,7 @@ void	display(void)
 			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
 			glColor3f(1.0f,0.0f,0.0f);
 			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glVertex3f(vertList[faceList[i].v4].x, vertList[faceList[i].v4].y, vertList[faceList[i].v4].z);
 			glEnd();
 		}
 		
@@ -407,7 +410,7 @@ void	keyboard(unsigned char key, int x, int y)
 int main(int argc, char* argv[])
 {
     // Initialize GLUT 
-	meshReader("Shape.obj", 1);
+	meshReader("Cylinder.obj", 1);
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Assignment 2 Template (orthogonal)");
