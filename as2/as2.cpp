@@ -277,7 +277,7 @@ void	mouseMotion(int x, int y)
 		else if(VERTICAL==DOWN) rho-=.1;
 	}
 	else if (MOUSE==LEFTM){
-		switch(HORIZONTAL){
+		/*switch(HORIZONTAL){
 		case UP:
 			phi*=1.001;
 			break;
@@ -291,7 +291,11 @@ void	mouseMotion(int x, int y)
 			theta*=0.999;
 			break;
 		default: break;
-		}
+		}*/
+		if (VERTICAL==UP) phi+=1;
+		else if (VERTICAL==DOWN) phi-=1;
+		if (HORIZONTAL==RIGHT) theta-=1;
+		else if (HORIZONTAL==LEFT) theta+=1;
 	}
 	display();
 }
