@@ -1,8 +1,5 @@
 // The template code for Assignment 2 
-// Jonathan, Mark
-
-//use constants from math.h
-#define _USE_MATH_DEFINES
+//
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,51 +10,21 @@
 
 #define ON 1
 #define OFF 0
-//#define LEFTM 0
-//#define MIDDLEM 1
-//#define RIGHTM 2
 
-enum {LEFTM,MIDDLEM,RIGHTM};
-enum {UP,RIGHT,DOWN,LEFT};
 
-typedef struct CameraPos{
-	float x,y,z; //camera pos
-	float lx,ly,lz; //looking at
-	float ux,uy,uz; //up vertex
-};
 // Global variables
 int window_width, window_height;    // Window dimensions
-int PERSPECTIVE = ON;
-int AXIS = ON;
-int Points = ON;
-int Lines = OFF;
-int Solid = OFF;
-int MOUSE = -1;
-int VERTICAL = -1;
-int HORIZONTAL = -1;
-int previousX=150,previousY=150;
+int PERSPECTIVE = OFF;
 
-//change these to change starting orientation/view
-float rho = 5.;
-float phi = 0.;
-float theta = 0.;
-CameraPos c;
-
-//simple helper func convert degrees to radians for maths
-float toRads(float degrees)
-{
-	return degrees*(M_PI/180.);
-}
-
-// Vertex and Face data structure used in the mesh reader
+// Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
 typedef struct _point {
   float x,y,z;
 } point;
 
 typedef struct _faceStruct {
-  int v1,v2,v3,v4;
-  int n1,n2,n3,n4;
+  int v1,v2,v3;
+  int n1,n2,n3;
 } faceStruct;
 
 int verts, faces, norms;    // Number of vertices, faces and normals in the system
@@ -72,7 +39,7 @@ void meshReader (char *filename,int sign)
   int i;
   char letter;
   point v1,v2,crossP;
-  int ix,iy,iz,ii;
+  int ix,iy,iz;
   int *normCount;
   FILE *fp;
 
@@ -120,11 +87,10 @@ void meshReader (char *filename,int sign)
   // Read the faces
   for(i = 0;i < faces;i++)
     {
-      fscanf(fp,"%c %d %d %d %d\n",&letter,&ix,&iy,&iz,&ii);
+      fscanf(fp,"%c %d %d %d\n",&letter,&ix,&iy,&iz);
       faceList[i].v1 = ix - 1;
       faceList[i].v2 = iy - 1;
       faceList[i].v3 = iz - 1;
-	  faceList[i].v4 = ii - 1;
     }
   fclose(fp);
 
@@ -179,6 +145,7 @@ void meshReader (char *filename,int sign)
 }
 
 
+
 // The display function. It is called whenever the window needs
 // redrawing (ie: overlapping window moves, resize, maximize)
 // You should redraw your polygons here
@@ -189,94 +156,54 @@ void	display(void)
    
     if (PERSPECTIVE) {
 		glLoadIdentity();
-		//calculate carthesian coords from spherical coords
-		c.x = rho*sin(toRads(phi))*cos(toRads(theta));
-		c.y = rho*sin(toRads(phi))*sin(toRads(theta));
-		c.z = rho*cos(toRads(phi));
-		//always looking at origin
-		c.lx = c.ly = c.lz = 0.;
-		//adjust up
-		c.ux = cos(toRads(theta));
-		c.uy = sin(toRads(theta));
-		c.uz = 1.;
 		// Set the camera position, orientation and target
-		gluLookAt(c.x,c.y,c.z,  c.lx,c.ly,c.lz,  c.ux,c.uy,c.uz);
-		//gluLookAt(0,5,5, 0,-2,0, 0,1,0);
+		gluLookAt(0,0,5, 0,0,0, 0,1,0);
     }
 
-    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	if(AXIS){
-    // Draw a red line
-		glColor3f(1,0,0);
-		glBegin(GL_LINES);
-			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,0.0,10.0);
-		glEnd();
+    // Draw a red rectangle
+    glColor3f(1,0,0);
+	glBegin(GL_POLYGON);
+		glVertex3f(0.8,0.8,-0.8);
+		glVertex3f(0.8,-0.8,-0.8);
+		glVertex3f(-0.8,-0.8,-0.0);
+		glVertex3f(-0.8,0.8,-0.0);
+    glEnd();
 
-	//Draw a blue Line
-		glColor3f(0,0,1);
-		glBegin(GL_LINES);
-			glVertex3f(0.0,0.0,0.0);
-			glVertex3f(0.0,10.0,0.0);
-		glEnd();
+    // Draw a blue tetraheadron
+    glColor3f(0,0,1);
+    glBegin(GL_TRIANGLES);
+		glVertex3f(0.0,1.6,0.0);
+		glVertex3f(0.8,-0.4,0.8);
+		glVertex3f(-0.8,-0.4,0.8);
+
+		glVertex3f(0.0,1.6,0.0);
+		glVertex3f(0.8,-0.4,0.8);
+		glVertex3f(0.0,-0.4,-0.8);
+
+		glVertex3f(0.0,1.6,0.0);
+		glVertex3f(0.0,-0.4,-0.8);
+		glVertex3f(-0.8,-0.4,0.8);
+
+		glVertex3f(-0.8,-0.4,0.8);
+		glVertex3f(0.8,-0.4,0.8);
+		glVertex3f(0.0,-0.4,-0.8);
+    glEnd();
 
     // Draw a green line
-		glColor3f(0,1,0);
-		glBegin(GL_LINES);
-			glVertex3f(10.0,0.0,0.0);
-			glVertex3f(0.0,0.0,0.0);
-		glEnd();
-	}
-
-	if(Points)	{
-		glColor3f(1,0,0);
-		glBegin(GL_POINTS);
-			for(int i = 0; i < verts; i++)
-			{
-				glVertex3f(vertList[i].x, vertList[i].y, vertList[i].z);				
-			}
-		glEnd();
-	}
-	if(Lines) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		for(int i = 0; i < faces; i++)
-		{
-			glBegin(GL_QUADS);	
-			glColor3f(1.0f,0.0f,0.0f);
-			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
-			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
-			glVertex3f(vertList[faceList[i].v4].x, vertList[faceList[i].v4].y, vertList[faceList[i].v4].z);
-			glEnd();
-		}
-	}
-	if(Solid) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		for(int i = 0; i < faces; i++)
-		{
-			glBegin(GL_TRIANGLE_FAN);	
-			glColor3f(1.0f,0.0f,0.0f);
-			//glVertex3f(faceList[i].v1, faceList[i].v2, faceList[i].v3);
-			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
-			glVertex3f(vertList[faceList[i].v4].x, vertList[faceList[i].v4].y, vertList[faceList[i].v4].z);
-			glEnd();
-		}
-		
-	}
+    glColor3f(0,1,0);
+    glBegin(GL_LINES);
+		glVertex3f(1.8,1.8,0.0);
+		glVertex3f(0.1,0.1,0.0);
+    glEnd();
 
     // (Note that the origin is lower left corner)
     // (Note also that the window spans (0,1) )
     // Finish drawing, update the frame buffer, and swap buffers
     glutSwapBuffers();
 }
+
 
 // This function is called whenever the window is resized. 
 // Parameters are the new dimentions of the window
@@ -295,6 +222,7 @@ void	resize(int x,int y)
     printf("Resized to %d %d\n",x,y);
 }
 
+
 // This function is called whenever the mouse is pressed or released
 // button is a number 0 to 2 designating the button
 // state is 1 for release 0 for press event
@@ -302,50 +230,16 @@ void	resize(int x,int y)
 void	mouseButton(int button,int state,int x,int y)
 {
     printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
-	if (button == LEFTM) MOUSE = LEFTM;
-	if (button == MIDDLEM) MOUSE = MIDDLEM;
-	if (button == RIGHTM) MOUSE = RIGHTM;
 }
+
 
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
 {
-	
-	if (previousY-y>0) VERTICAL = UP; else VERTICAL = DOWN;
-	if (previousX-x>0) HORIZONTAL = LEFT; else HORIZONTAL = RIGHT;
-	printf("Mouse is at %d, %d with button %d in direction %d,%d\n", x,y,MOUSE,VERTICAL,HORIZONTAL);
-	previousX=x;
-	previousY=y;
-
-	if (MOUSE==RIGHTM){
-		//adjust rho to zoom in and out
-		if(VERTICAL==UP) rho+=.1;
-		else if(VERTICAL==DOWN) rho-=.1;
-	}
-	else if (MOUSE==LEFTM){
-		/*switch(HORIZONTAL){
-		case UP:
-			phi*=1.001;
-			break;
-		case DOWN:
-			phi*=0.999;
-			break;
-		case LEFT:
-			theta*=1.001;
-			break;
-		case RIGHT:
-			theta*=0.999;
-			break;
-		default: break;
-		}*/
-		if (VERTICAL==UP) phi+=1;
-		else if (VERTICAL==DOWN) phi-=1;
-		if (HORIZONTAL==RIGHT) theta-=1;
-		else if (HORIZONTAL==LEFT) theta+=1;
-	}
-	display();
+	printf("Mouse is at %d, %d\n", x,y);
 }
+
 
 // This function is called whenever there is a keyboard input
 // key is the ASCII value of the key pressed
@@ -353,29 +247,10 @@ void	mouseMotion(int x, int y)
 void	keyboard(unsigned char key, int x, int y)
 {
     switch(key) {
-    case 'q':                           /* Quit */
+    case '':                           /* Quit */
 		exit(1);
 		break;
-    case 'a':
-		if(AXIS)
-			AXIS = OFF;
-		else
-			AXIS = ON;
-		break;
-	case 's':
-		if(Points){
-			Lines = ON;
-			Points = OFF;
-		}
-		else if(Lines){
-			Solid = ON;
-			Lines = OFF;
-		}
-		else{
-			Solid = OFF;
-			Points = ON;
-		}
-		break;
+    case 'p':
     case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
         if(PERSPECTIVE) {
@@ -406,11 +281,11 @@ void	keyboard(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
+
 // Here's the main
 int main(int argc, char* argv[])
 {
-    // Initialize GLUT 
-	meshReader("Cylinder.obj", 1);
+    // Initialize GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutCreateWindow("Assignment 2 Template (orthogonal)");
@@ -419,7 +294,6 @@ int main(int argc, char* argv[])
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMotion);
     glutKeyboardFunc(keyboard);
-	
 
     // Initialize GL
     glMatrixMode(GL_PROJECTION);
