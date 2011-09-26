@@ -162,41 +162,36 @@ void	display(void)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	// Draw a red rectangle
-	glColor3f(1,0,0);
-	glBegin(GL_POLYGON);
-		glVertex3f(0.8,0.8,-0.8);
-		glVertex3f(0.8,-0.8,-0.8);
-		glVertex3f(-0.8,-0.8,-0.0);
-		glVertex3f(-0.8,0.8,-0.0);
+	glColor3f(0,0,1);
+	glBegin(GL_LINES);
+		glVertex3f(0,0,0);
+		glVertex3f(1,0,0);
 	glEnd();
 
-	// Draw a blue tetraheadron
-	glColor3f(0,0,1);
-	glBegin(GL_TRIANGLES);
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
-
-		glVertex3f(0.0,1.6,0.0);
-		glVertex3f(0.0,-0.4,-0.8);
-		glVertex3f(-0.8,-0.4,0.8);
-
-		glVertex3f(-0.8,-0.4,0.8);
-		glVertex3f(0.8,-0.4,0.8);
-		glVertex3f(0.0,-0.4,-0.8);
+	glColor3f(1,0,0);
+	glBegin(GL_LINES);
+		glVertex3f(0,0,0);
+		glVertex3f(0,1,0);
 	glEnd();
 
 	// Draw a green line
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
-		glVertex3f(1.8,1.8,0.0);
-		glVertex3f(0.1,0.1,0.0);
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,1);
 	glEnd();
+
+	for(int i = 0; i < faces; i++)
+		{
+			glBegin(GL_TRIANGLES);	
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
+			glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glEnd();
+		}
 
 	// (Note that the origin is lower left corner)
 	// (Note also that the window spans (0,1) )
@@ -286,6 +281,7 @@ void	keyboard(unsigned char key, int x, int y)
 int main(int argc, char* argv[])
 {
 	// Initialize GLUT
+	meshReader("tetrahedron.obj",0);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Assignment 2 Template (orthogonal)");
