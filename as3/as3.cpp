@@ -18,6 +18,11 @@ double Rotz = 0.0;
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
 
+class wcPt3D {
+public:
+	GLfloat x,y,z;
+};
+
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
 typedef struct _point {
@@ -25,7 +30,8 @@ typedef struct _point {
 } point;
 
  typedef GLfloat WorldMatrix[4][4];
- WorldMatrix RotationMatrix;
+ WorldMatrix MotionMatrix;
+ void rotate3D(wcPt3D,wcPt3D,GLfloat, WorldMatrix);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -183,20 +189,20 @@ void	display(void)
 
 	glColor3f(0,0,1);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(RotationMatrix[0][0]+RotationMatrix[0][3],RotationMatrix[1][0] + RotationMatrix[1][3], 1 + RotationMatrix[2][0]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][0]+MotionMatrix[0][3],MotionMatrix[1][0] + MotionMatrix[1][3], 1 + MotionMatrix[2][0]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(1,0,0);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(RotationMatrix[0][1]+RotationMatrix[0][3], 1 + RotationMatrix[1][1]+ RotationMatrix[1][3],RotationMatrix[2][1]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][1]+MotionMatrix[0][3], 1 + MotionMatrix[1][1]+ MotionMatrix[1][3],MotionMatrix[2][1]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(1 + RotationMatrix[0][2]+RotationMatrix[0][3],RotationMatrix[1][2]+ RotationMatrix[1][3],RotationMatrix[2][2]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(1 + MotionMatrix[0][2]+MotionMatrix[0][3],MotionMatrix[1][2]+ MotionMatrix[1][3],MotionMatrix[2][2]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(0,0,1);
@@ -224,15 +230,11 @@ void	display(void)
 
 			glBegin(GL_TRIANGLES);	
 			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2] + RotationMatrix[0][3], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] + RotationMatrix[1][3] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v1].x * MotionMatrix [0][0] + vertList[faceList[i].v1].x * MotionMatrix [0][1] + vertList[faceList[i].v1].x * MotionMatrix[0][2] + MotionMatrix[0][3], vertList[faceList[i].v1].y * MotionMatrix[1][0] + vertList[faceList[i].v1].y * MotionMatrix[1][1] + vertList[faceList[i].v1].y * MotionMatrix[1][2] + MotionMatrix[1][3] ,vertList[faceList[i].v1].z * MotionMatrix[2][0] + vertList[faceList[i].v1].z * MotionMatrix[2][1] + vertList[faceList[i].v1].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-<<<<<<< HEAD
-			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
-=======
-			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
->>>>>>> parent of 1dd7a26... added functions for multiply, translate, rotate, and scale
+			glVertex3f(vertList[faceList[i].v2].x * MotionMatrix [0][0] + vertList[faceList[i].v2].x * MotionMatrix[0][1] + vertList[faceList[i].v2].x * MotionMatrix[0][2]+ MotionMatrix[0][3],vertList[faceList[i].v2].y * MotionMatrix[1][0] + vertList[faceList[i].v2].y * MotionMatrix[1][1] + vertList[faceList[i].v2].y * MotionMatrix[1][2] + MotionMatrix[1][3], vertList[faceList[i].v2].z * MotionMatrix[2][0] + vertList[faceList[i].v2].z * MotionMatrix[2][1] + vertList[faceList[i].v2].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v3].x * MotionMatrix [0][0] + vertList[faceList[i].v3].x * MotionMatrix[0][1] + vertList[faceList[i].v3].x * MotionMatrix[0][2]+ MotionMatrix[0][3],vertList[faceList[i].v3].y * MotionMatrix[1][0] + vertList[faceList[i].v3].y * MotionMatrix[1][1] + vertList[faceList[i].v3].y * MotionMatrix[1][2] + MotionMatrix[1][3], vertList[faceList[i].v3].z * MotionMatrix[2][0] + vertList[faceList[i].v3].z * MotionMatrix[2][1] + vertList[faceList[i].v3].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 			glEnd();
 		}
 
@@ -289,52 +291,52 @@ void	keyboard(unsigned char key, int x, int y)
 		exit(1);
 		break;
 	case '4':
-		RotationMatrix[0][3]--;
+		MotionMatrix[0][3]--;
 		break;
 	case '6':
-		RotationMatrix[0][3]++;
+		MotionMatrix[0][3]++;
 		break;
 	case '2':
-		RotationMatrix[1][3]--;
+		MotionMatrix[1][3]--;
 		break;
 	case '8':
-		RotationMatrix[1][3]++;
+		MotionMatrix[1][3]++;
 		break;
 	case '9':
-		RotationMatrix[2][3]++;
+		MotionMatrix[2][3]++;
 		break;
 	case '1':
-		RotationMatrix[2][3]--;
+		MotionMatrix[2][3]--;
 		break;
 	case '[':
-		Roty = RotationMatrix[1][3];
-		RotationMatrix[1][3] = RotationMatrix[1][3]*cos(.1745329) - RotationMatrix[2][3]*sin(.1745329);
-		RotationMatrix[2][3] = Roty*sin(.1745329) + RotationMatrix[2][3]*cos(.1745329);
+		Roty = MotionMatrix[1][3];
+		MotionMatrix[1][3] = MotionMatrix[1][3]*cos(.1745329) - MotionMatrix[2][3]*sin(.1745329);
+		MotionMatrix[2][3] = Roty*sin(.1745329) + MotionMatrix[2][3]*cos(.1745329);
 		break;
 	case ']':
-		Roty = RotationMatrix[1][3];
-		RotationMatrix[1][3] = RotationMatrix[1][3]*cos(-.1745329) - RotationMatrix[2][3]*sin(-.1745329);
-		RotationMatrix[2][3] = Roty*sin(-.1745329) + RotationMatrix[2][3]*cos(-.1745329);
+		Roty = MotionMatrix[1][3];
+		MotionMatrix[1][3] = MotionMatrix[1][3]*cos(-.1745329) - MotionMatrix[2][3]*sin(-.1745329);
+		MotionMatrix[2][3] = Roty*sin(-.1745329) + MotionMatrix[2][3]*cos(-.1745329);
 		break;
 	case ';':
-		Rotz = RotationMatrix[2][3];
-		RotationMatrix[2][3] = Rotz*cos(.1745329) - RotationMatrix[0][3]*sin(.1745329);
-		RotationMatrix[0][3] = Rotz*sin(.1745329) + RotationMatrix[0][3]*cos(.1745329); 
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[2][3] = Rotz*cos(.1745329) - MotionMatrix[0][3]*sin(.1745329);
+		MotionMatrix[0][3] = Rotz*sin(.1745329) + MotionMatrix[0][3]*cos(.1745329); 
 		break;
 	case'"':
-		Rotz = RotationMatrix[2][3];
-		RotationMatrix[2][3] = Rotz*cos(-.1745329) - RotationMatrix[0][3]*sin(-.1745329);
-		RotationMatrix[0][3] = Rotz*sin(-.1745329) + RotationMatrix[0][3]*cos(-.1745329); 
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[2][3] = Rotz*cos(-.1745329) - MotionMatrix[0][3]*sin(-.1745329);
+		MotionMatrix[0][3] = Rotz*sin(-.1745329) + MotionMatrix[0][3]*cos(-.1745329); 
 		break;
 	case '.':
-		Rotx = RotationMatrix[0][3];
-		RotationMatrix[0][3] = Rotx*cos(.1745329) - RotationMatrix[1][3]*sin(.1745329);
-		RotationMatrix[1][3] = Rotx*sin(.1745329) + RotationMatrix[1][3]*cos(.1745329);
+		Rotx = MotionMatrix[0][3];
+		MotionMatrix[0][3] = Rotx*cos(.1745329) - MotionMatrix[1][3]*sin(.1745329);
+		MotionMatrix[1][3] = Rotx*sin(.1745329) + MotionMatrix[1][3]*cos(.1745329);
 		break;
 	case '/':
-		Rotx = RotationMatrix[0][3];
-		RotationMatrix[0][3] = Rotx*cos(-.1745329) - RotationMatrix[1][3]*sin(-.1745329);
-		RotationMatrix[1][3] = Rotx*sin(-.1745329) + RotationMatrix[1][3]*cos(-.1745329);
+		Rotx = MotionMatrix[0][3];
+		MotionMatrix[0][3] = Rotx*cos(-.1745329) - MotionMatrix[1][3]*sin(-.1745329);
+		MotionMatrix[1][3] = Rotx*sin(-.1745329) + MotionMatrix[1][3]*cos(-.1745329);
 		break;
 	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
@@ -372,7 +374,7 @@ int main(int argc, char* argv[])
 {
 	// Initialize GLUT
 	meshReader("tetrahedron.obj",0);
-	matrix4x4SetIdentity(RotationMatrix);
+	matrix4x4SetIdentity(MotionMatrix);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Assignment 2 Template (orthogonal)");
@@ -395,14 +397,8 @@ int main(int argc, char* argv[])
 	return 0;        
 }
 
-class wcPt3D {
-public:
-	GLfloat x,y,z;
-};
-
 WorldMatrix matComposite;
 
-//matrix muliplication
 void matrix4x4Multiply(WorldMatrix m1, WorldMatrix m2){
 	GLint row, col;
 	WorldMatrix matTemp;
@@ -472,4 +468,44 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 	//inverse initial translation and multiply with first 2
 	translate3D(p1.x, p1.y, p1.z, matM);
+}
+
+//viewing shit
+
+wcPt3D camera,u,v,n;
+
+//left mouse   - rotate around up axis(viewing yaxis)
+//right mouse  - 
+//middle mouse - 
+void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, center is look at pt
+	// p2-p1 for n
+	n.x = eye.x - center.x;
+	n.y = eye.y - center.y;
+	n.z = eye.z - center.z;
+	
+	// norm
+	GLfloat N = sqrt(pow(n.x,2)+pow(n.y,2)+pow(n.z,2));
+
+	// n/norm(n)
+	n.x /= N;
+	n.y /= N;
+	n.z /= N;
+
+	//p2-p1 for v
+	v.x = up.x - eye.x;
+	v.y = up.y - eye.y;
+	v.z = up.z - eye.z;
+
+	//init u 
+	u.x = (v.y*(-n.z))-(v.z*(-n.y));
+	u.y = (v.x*(-n.z))-(v.z*(-n.x));
+	u.z = (v.x*(-n.y))-(v.y*(-n.x));
+
+	GLfloat VN = sqrt(pow((v.y*(-n.z))-(v.z*(-n.y)),2)+pow((v.x*(-n.z))-(v.z*(-n.x)),2)+pow((v.x*(-n.y))-(v.y*(-n.x)),2));
+
+	u.x /= VN;
+	u.y /= VN;
+	u.z /= VN;
+
+
 }
