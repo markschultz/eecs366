@@ -181,7 +181,7 @@ void	display(void)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    glColor3f(0,0,1);
+	glColor3f(0,0,1);
 	glBegin(GL_LINES);
 		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
 		glVertex3f(RotationMatrix[0][0]+RotationMatrix[0][3],RotationMatrix[1][0] + RotationMatrix[1][3], 1 + RotationMatrix[2][0]+ RotationMatrix[2][3]);
@@ -227,9 +227,9 @@ void	display(void)
 			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2] + RotationMatrix[0][3], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] + RotationMatrix[1][3] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
 <<<<<<< HEAD
-            glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
 =======
-            glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
 >>>>>>> parent of 1dd7a26... added functions for multiply, translate, rotate, and scale
 				glColor3f(1.0f,0.0f,0.0f);
 			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
@@ -393,4 +393,83 @@ int main(int argc, char* argv[])
 	// Switch to main loop
 	glutMainLoop();
 	return 0;        
+}
+
+class wcPt3D {
+public:
+	GLfloat x,y,z;
+};
+
+WorldMatrix matComposite;
+
+//matrix muliplication
+void matrix4x4Multiply(WorldMatrix m1, WorldMatrix m2){
+	GLint row, col;
+	WorldMatrix matTemp;
+
+	for(row = 0;row<4;row++){
+		for(col=0;col<4;col++){
+			matTemp[row][col] = m1[row][0]*m2[0][col]+m1[row][1]*m2[1][col]+m1[row][2]*m2[2][col]+m1[row][3]*m2[3][col];
+		}
+	}
+	for(row = 0;row<4;row++){
+		for(col=0;col<4;col++){
+			m2[row][col]=matTemp[row][col];
+		}
+	}
+}
+void translate3D(GLfloat tx,GLfloat ty,GLfloat tz, WorldMatrix matM) {
+	WorldMatrix matTrans;
+
+	matrix4x4SetIdentity(matTrans);
+
+	matTrans[0][3]=tx;
+	matTrans[1][3]=ty;
+	matTrans[2][3]=tz;
+
+	matrix4x4Multiply(matTrans,matM);
+}
+void scale3D(GLfloat sx, GLfloat sy, GLfloat sz, wcPt3D fixedPt, WorldMatrix matM){
+	WorldMatrix matScale;
+	matrix4x4SetIdentity(matScale);
+
+	matScale[0][0] = sx;
+	matScale[0][3] = (1-sx)*fixedPt.x;
+	matScale[1][1] = sy;
+	matScale[1][3] = (1-sy)*fixedPt.y;
+	matScale[2][2] = sz;
+	matScale[2][3] = (1-sz)*fixedPt.z;
+
+	matrix4x4Multiply(matScale,matM);
+}
+void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
+	WorldMatrix matRot;
+	GLfloat axisVectLength = sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y) + (p2.z - p1.z)*(p2.z - p1.z));
+	GLfloat cosA = cos(radianAngle);
+	GLfloat oneC = 1 - cosA;
+	GLfloat sinA = sin(radianAngle);
+	GLfloat ux = (p2.x - p1.x) / axisVectLength;
+	GLfloat uy = (p2.y - p1.y) / axisVectLength;
+	GLfloat uz = (p2.z - p1.z) / axisVectLength;
+
+	//set up translation matrix by moving p1 to origin
+	translate3D(-p1.x, -p1.y, -p1.z, matM);
+
+	//initialize matRot to identity
+	matrix4x4SetIdentity(matRot);
+
+	matRot[0][0] = ux*ux*oneC + cosA;
+	matRot[0][1] = ux*uy*oneC - uz*sinA;
+	matRot[0][2] = ux*uz*oneC + uy*sinA;
+	matRot[1][0] = uy*ux*oneC + uz*sinA;
+	matRot[1][1] = uy*uy*oneC + cosA;
+	matRot[1][2] = uy*uz*oneC - ux*sinA;
+	matRot[2][0] = uz*ux*oneC - uy*sinA;
+	matRot[2][1] = uz*uy*oneC + ux*sinA;
+	matRot[2][2] = uz*uz*oneC + sinA;
+
+	matrix4x4Multiply(matRot,matM);
+
+	//inverse initial translation and multiply with first 2
+	translate3D(p1.x, p1.y, p1.z, matM);
 }
