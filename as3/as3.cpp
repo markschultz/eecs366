@@ -14,6 +14,9 @@
 double Rotx = 0.0;
 double Roty = 0.0;
 double Rotz = 0.0;
+double Roty2 = 0.0;
+double Rotx2 = 0.0;
+double Rotz2 = 0.0;
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
@@ -24,8 +27,15 @@ typedef struct _point {
   float x,y,z;
 } point;
 
+class wcPt3D {
+public:
+	GLfloat x,y,z;
+};
+
  typedef GLfloat WorldMatrix[4][4];
- WorldMatrix RotationMatrix;
+ WorldMatrix MotionMatrix;
+
+ void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -183,20 +193,20 @@ void	display(void)
 
 	glColor3f(0,0,1);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(RotationMatrix[0][0]+RotationMatrix[0][3],RotationMatrix[1][0] + RotationMatrix[1][3], 1 + RotationMatrix[2][0]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][0]+MotionMatrix[0][3],MotionMatrix[1][0] + MotionMatrix[1][3], 1 + MotionMatrix[2][0]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(1,0,0);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(RotationMatrix[0][1]+RotationMatrix[0][3], 1 + RotationMatrix[1][1]+ RotationMatrix[1][3],RotationMatrix[2][1]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][1]+MotionMatrix[0][3], 1 + MotionMatrix[1][1]+ MotionMatrix[1][3],MotionMatrix[2][1]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
-		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
-		glVertex3f(1 + RotationMatrix[0][2]+RotationMatrix[0][3],RotationMatrix[1][2]+ RotationMatrix[1][3],RotationMatrix[2][2]+ RotationMatrix[2][3]);
+		glVertex3f(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
+		glVertex3f(1 + MotionMatrix[0][2]+MotionMatrix[0][3],MotionMatrix[1][2]+ MotionMatrix[1][3],MotionMatrix[2][2]+ MotionMatrix[2][3]);
 	glEnd();
 
 	glColor3f(0,0,1);
@@ -221,17 +231,13 @@ void	display(void)
 
 	for(int i = 0; i < faces; i++)
 		{
-
 			glBegin(GL_TRIANGLES);	
 			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2] + RotationMatrix[0][3], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] + RotationMatrix[1][3] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v1].x * MotionMatrix [0][0] + vertList[faceList[i].v1].x * MotionMatrix [0][1] + vertList[faceList[i].v1].x * MotionMatrix[0][2] + MotionMatrix[0][3], vertList[faceList[i].v1].y * MotionMatrix[1][0] + vertList[faceList[i].v1].y * MotionMatrix[1][1] + vertList[faceList[i].v1].y * MotionMatrix[1][2] + MotionMatrix[1][3] ,vertList[faceList[i].v1].z * MotionMatrix[2][0] + vertList[faceList[i].v1].z * MotionMatrix[2][1] + vertList[faceList[i].v1].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
-=======
-			glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
->>>>>>> parent of 1dd7a26... added functions for multiply, translate, rotate, and scale
+			glVertex3f(vertList[faceList[i].v2].x * MotionMatrix [0][0] + vertList[faceList[i].v2].x * MotionMatrix[0][1] + vertList[faceList[i].v2].x * MotionMatrix[0][2]+ MotionMatrix[0][3],vertList[faceList[i].v2].y * MotionMatrix[1][0] + vertList[faceList[i].v2].y * MotionMatrix[1][1] + vertList[faceList[i].v2].y * MotionMatrix[1][2] + MotionMatrix[1][3], vertList[faceList[i].v2].z * MotionMatrix[2][0] + vertList[faceList[i].v2].z * MotionMatrix[2][1] + vertList[faceList[i].v2].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
+			glVertex3f(vertList[faceList[i].v3].x * MotionMatrix [0][0] + vertList[faceList[i].v3].x * MotionMatrix[0][1] + vertList[faceList[i].v3].x * MotionMatrix[0][2]+ MotionMatrix[0][3],vertList[faceList[i].v3].y * MotionMatrix[1][0] + vertList[faceList[i].v3].y * MotionMatrix[1][1] + vertList[faceList[i].v3].y * MotionMatrix[1][2] + MotionMatrix[1][3], vertList[faceList[i].v3].z * MotionMatrix[2][0] + vertList[faceList[i].v3].z * MotionMatrix[2][1] + vertList[faceList[i].v3].z * MotionMatrix[2][2] + MotionMatrix[2][3]);
 			glEnd();
 		}
 
@@ -288,52 +294,52 @@ void	keyboard(unsigned char key, int x, int y)
 		exit(1);
 		break;
 	case '4':
-		RotationMatrix[0][3]--;
+		MotionMatrix[0][3]--;
 		break;
 	case '6':
-		RotationMatrix[0][3]++;
+		MotionMatrix[0][3]++;
 		break;
 	case '2':
-		RotationMatrix[1][3]--;
+		MotionMatrix[1][3]--;
 		break;
 	case '8':
-		RotationMatrix[1][3]++;
+		MotionMatrix[1][3]++;
 		break;
 	case '9':
-		RotationMatrix[2][3]++;
+		MotionMatrix[2][3]++;
 		break;
 	case '1':
-		RotationMatrix[2][3]--;
+		MotionMatrix[2][3]--;
 		break;
 	case '[':
-		Roty = RotationMatrix[1][3];
-		RotationMatrix[1][3] = RotationMatrix[1][3]*cos(.1745329) - RotationMatrix[2][3]*sin(.1745329);
-		RotationMatrix[2][3] = Roty*sin(.1745329) + RotationMatrix[2][3]*cos(.1745329);
+		Roty = MotionMatrix[1][3];
+		MotionMatrix[1][3] = MotionMatrix[1][3]*cos(.1745329) - MotionMatrix[2][3]*sin(.1745329);
+		MotionMatrix[2][3] = Roty*sin(.1745329) + MotionMatrix[2][3]*cos(.1745329);
 		break;
 	case ']':
-		Roty = RotationMatrix[1][3];
-		RotationMatrix[1][3] = RotationMatrix[1][3]*cos(-.1745329) - RotationMatrix[2][3]*sin(-.1745329);
-		RotationMatrix[2][3] = Roty*sin(-.1745329) + RotationMatrix[2][3]*cos(-.1745329);
+		Roty = MotionMatrix[1][3];
+		MotionMatrix[1][3] = MotionMatrix[1][3]*cos(-.1745329) - MotionMatrix[2][3]*sin(-.1745329);
+		MotionMatrix[2][3] = Roty*sin(-.1745329) + MotionMatrix[2][3]*cos(-.1745329);
 		break;
 	case ';':
-		Rotz = RotationMatrix[2][3];
-		RotationMatrix[2][3] = Rotz*cos(.1745329) - RotationMatrix[0][3]*sin(.1745329);
-		RotationMatrix[0][3] = Rotz*sin(.1745329) + RotationMatrix[0][3]*cos(.1745329); 
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[2][3] = Rotz*cos(.1745329) - MotionMatrix[0][3]*sin(.1745329);
+		MotionMatrix[0][3] = Rotz*sin(.1745329) + MotionMatrix[0][3]*cos(.1745329); 
 		break;
 	case'"':
-		Rotz = RotationMatrix[2][3];
-		RotationMatrix[2][3] = Rotz*cos(-.1745329) - RotationMatrix[0][3]*sin(-.1745329);
-		RotationMatrix[0][3] = Rotz*sin(-.1745329) + RotationMatrix[0][3]*cos(-.1745329); 
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[2][3] = Rotz*cos(-.1745329) - MotionMatrix[0][3]*sin(-.1745329);
+		MotionMatrix[0][3] = Rotz*sin(-.1745329) + MotionMatrix[0][3]*cos(-.1745329); 
 		break;
 	case '.':
-		Rotx = RotationMatrix[0][3];
-		RotationMatrix[0][3] = Rotx*cos(.1745329) - RotationMatrix[1][3]*sin(.1745329);
-		RotationMatrix[1][3] = Rotx*sin(.1745329) + RotationMatrix[1][3]*cos(.1745329);
+		Rotx = MotionMatrix[0][3];
+		MotionMatrix[0][3] = Rotx*cos(.1745329) - MotionMatrix[1][3]*sin(.1745329);
+		MotionMatrix[1][3] = Rotx*sin(.1745329) + MotionMatrix[1][3]*cos(.1745329);
 		break;
 	case '/':
-		Rotx = RotationMatrix[0][3];
-		RotationMatrix[0][3] = Rotx*cos(-.1745329) - RotationMatrix[1][3]*sin(-.1745329);
-		RotationMatrix[1][3] = Rotx*sin(-.1745329) + RotationMatrix[1][3]*cos(-.1745329);
+		Rotx = MotionMatrix[0][3];
+		MotionMatrix[0][3] = Rotx*cos(-.1745329) - MotionMatrix[1][3]*sin(-.1745329);
+		MotionMatrix[1][3] = Rotx*sin(-.1745329) + MotionMatrix[1][3]*cos(-.1745329);
 		break;
 	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
@@ -371,7 +377,7 @@ int main(int argc, char* argv[])
 {
 	// Initialize GLUT
 	meshReader("tetrahedron.obj",0);
-	matrix4x4SetIdentity(RotationMatrix);
+	matrix4x4SetIdentity(MotionMatrix);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Assignment 2 Template (orthogonal)");
@@ -393,11 +399,6 @@ int main(int argc, char* argv[])
 	glutMainLoop();
 	return 0;        
 }
-
-class wcPt3D {
-public:
-	GLfloat x,y,z;
-};
 
 WorldMatrix matComposite;
 
