@@ -11,7 +11,9 @@
 #define ON 1
 #define OFF 0
 
-
+double Rotx = 0.0;
+double Roty = 0.0;
+double Rotz = 0.0;
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
@@ -21,6 +23,22 @@ int PERSPECTIVE = OFF;
 typedef struct _point {
   float x,y,z;
 } point;
+
+ typedef GLfloat WorldMatrix[4][4];
+
+ void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
+ {
+	 GLint row, col;
+	
+		for(row =0; row<4; row++)
+			for(col = 0; col < 4; col++)
+				matIdent4x4 [row][col] = 0;
+
+		matIdent4x4[0][0] = 1;
+		matIdent4x4[1][1] = 1;
+		matIdent4x4[2][2] = 1;
+		matIdent4x4[3][3] = 1;
+ }
 
 typedef struct _faceStruct {
   int v1,v2,v3;
@@ -165,31 +183,34 @@ void	display(void)
 	glColor3f(0,0,1);
 	glBegin(GL_LINES);
 		glVertex3f(0,0,0);
-		glVertex3f(1,0,0);
+		glVertex3f(3,0,0);
 	glEnd();
 
 	glColor3f(1,0,0);
 	glBegin(GL_LINES);
 		glVertex3f(0,0,0);
-		glVertex3f(0,1,0);
+		glVertex3f(0,3,0);
 	glEnd();
 
 	// Draw a green line
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
 		glVertex3f(0,0,0);
-		glVertex3f(0,0,1);
+		glVertex3f(0,0,3);
 	glEnd();
 
+			WorldMatrix RotationMatrix;
+			matrix4x4SetIdentity(RotationMatrix);
 	for(int i = 0; i < faces; i++)
 		{
+
 			glBegin(GL_TRIANGLES);	
 			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v1].x, vertList[faceList[i].v1].y, vertList[faceList[i].v1].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v2].x, vertList[faceList[i].v2].y, vertList[faceList[i].v2].z);
-			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x, vertList[faceList[i].v3].y, vertList[faceList[i].v3].z);
+			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2]);
+				glColor3f(1.0f,0.0f,0.0f);
+            glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] , vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]);
+				glColor3f(1.0f,0.0f,0.0f);
+			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] , vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2]);
 			glEnd();
 		}
 
