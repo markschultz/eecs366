@@ -25,6 +25,7 @@ typedef struct _point {
 } point;
 
  typedef GLfloat WorldMatrix[4][4];
+ WorldMatrix RotationMatrix;
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -199,18 +200,17 @@ void	display(void)
 		glVertex3f(0,0,3);
 	glEnd();
 
-			WorldMatrix RotationMatrix;
-			matrix4x4SetIdentity(RotationMatrix);
+
 	for(int i = 0; i < faces; i++)
 		{
 
 			glBegin(GL_TRIANGLES);	
 			glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2]);
+			glVertex3f(vertList[faceList[i].v1].x * RotationMatrix [0][0] + vertList[faceList[i].v1].x * RotationMatrix [0][1] + vertList[faceList[i].v1].x * RotationMatrix[0][2] + RotationMatrix[0][3], vertList[faceList[i].v1].y * RotationMatrix[1][0] + vertList[faceList[i].v1].y * RotationMatrix[1][1] + vertList[faceList[i].v1].y * RotationMatrix[1][2] + RotationMatrix[1][3] ,vertList[faceList[i].v1].z * RotationMatrix[2][0] + vertList[faceList[i].v1].z * RotationMatrix[2][1] + vertList[faceList[i].v1].z * RotationMatrix[2][2] + RotationMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-            glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] , vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]);
+            glVertex3f(vertList[faceList[i].v2].x * RotationMatrix [0][0] + vertList[faceList[i].v2].x * RotationMatrix[0][1] + vertList[faceList[i].v2].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v2].y * RotationMatrix[1][0] + vertList[faceList[i].v2].y * RotationMatrix[1][1] + vertList[faceList[i].v2].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v2].z * RotationMatrix[2][0] + vertList[faceList[i].v2].z * RotationMatrix[2][1] + vertList[faceList[i].v2].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
 				glColor3f(1.0f,0.0f,0.0f);
-			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] , vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2]);
+			glVertex3f(vertList[faceList[i].v3].x * RotationMatrix [0][0] + vertList[faceList[i].v3].x * RotationMatrix[0][1] + vertList[faceList[i].v3].x * RotationMatrix[0][2]+ RotationMatrix[0][3],vertList[faceList[i].v3].y * RotationMatrix[1][0] + vertList[faceList[i].v3].y * RotationMatrix[1][1] + vertList[faceList[i].v3].y * RotationMatrix[1][2] + RotationMatrix[1][3], vertList[faceList[i].v3].z * RotationMatrix[2][0] + vertList[faceList[i].v3].z * RotationMatrix[2][1] + vertList[faceList[i].v3].z * RotationMatrix[2][2]+ RotationMatrix[2][3]);
 			glEnd();
 		}
 
@@ -266,7 +266,12 @@ void	keyboard(unsigned char key, int x, int y)
 	case '':                           /* Quit */
 		exit(1);
 		break;
-	case 'p':
+	case '4':
+		RotationMatrix[0][3]--;
+		break;
+	case '6':
+		RotationMatrix[0][3]++;
+		break;
 	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
 		if(PERSPECTIVE) {
@@ -303,6 +308,7 @@ int main(int argc, char* argv[])
 {
 	// Initialize GLUT
 	meshReader("tetrahedron.obj",0);
+	matrix4x4SetIdentity(RotationMatrix);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Assignment 2 Template (orthogonal)");
