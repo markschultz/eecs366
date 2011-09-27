@@ -21,6 +21,11 @@ double Rotz2 = 0.0;
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
 
+class wcPt3D {
+public:
+	GLfloat x,y,z;
+};
+
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
 typedef struct _point {
@@ -402,7 +407,6 @@ int main(int argc, char* argv[])
 
 WorldMatrix matComposite;
 
-//matrix muliplication
 void matrix4x4Multiply(WorldMatrix m1, WorldMatrix m2){
 	GLint row, col;
 	WorldMatrix matTemp;
@@ -472,4 +476,44 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 	//inverse initial translation and multiply with first 2
 	translate3D(p1.x, p1.y, p1.z, matM);
+}
+
+//viewing shit
+
+wcPt3D camera,u,v,n;
+
+//left mouse   - rotate around up axis(viewing yaxis)
+//right mouse  - 
+//middle mouse - 
+void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, center is look at pt
+	// p2-p1 for n
+	n.x = eye.x - center.x;
+	n.y = eye.y - center.y;
+	n.z = eye.z - center.z;
+	
+	// norm
+	GLfloat N = sqrt(pow(n.x,2)+pow(n.y,2)+pow(n.z,2));
+
+	// n/norm(n)
+	n.x /= N;
+	n.y /= N;
+	n.z /= N;
+
+	//p2-p1 for v
+	v.x = up.x - eye.x;
+	v.y = up.y - eye.y;
+	v.z = up.z - eye.z;
+
+	//init u 
+	u.x = (v.y*(-n.z))-(v.z*(-n.y));
+	u.y = (v.x*(-n.z))-(v.z*(-n.x));
+	u.z = (v.x*(-n.y))-(v.y*(-n.x));
+
+	GLfloat VN = sqrt(pow((v.y*(-n.z))-(v.z*(-n.y)),2)+pow((v.x*(-n.z))-(v.z*(-n.x)),2)+pow((v.x*(-n.y))-(v.y*(-n.x)),2));
+
+	u.x /= VN;
+	u.y /= VN;
+	u.z /= VN;
+
+
 }
