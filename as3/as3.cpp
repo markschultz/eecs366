@@ -181,7 +181,7 @@ void	display(void)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		glColor3f(0,0,1);
+    glColor3f(0,0,1);
 	glBegin(GL_LINES);
 		glVertex3f(RotationMatrix[0][3],RotationMatrix[1][3],RotationMatrix[2][3]);
 		glVertex3f(RotationMatrix[0][0]+RotationMatrix[0][3],RotationMatrix[1][0] + RotationMatrix[1][3], 1 + RotationMatrix[2][0]+ RotationMatrix[2][3]);
