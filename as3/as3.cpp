@@ -29,14 +29,21 @@ typedef struct _point {
 
 class wcPt3D {
 public:
+	wcPt3D (GLfloat,GLfloat,GLfloat);
 	GLfloat x,y,z;
 };
+wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
+	x=ix;
+	y=iy;
+	z=iz;
+}
 
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
- wcPt3D WorldOrigin;
+ wcPt3D WorldOrigin (0,0,0);
 
  void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
+ void myLookAt(wcPt3D,wcPt3D,wcPt3D);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -185,7 +192,8 @@ void	display(void)
 	if (PERSPECTIVE) {
 		glLoadIdentity();
 		// Set the camera position, orientation and target
-		gluLookAt(0,0,5, 0,0,0, 0,1,0);
+		//myLookAt(0,0,5, 0,0,0, 0,1,0);
+		myLookAt(wcPt3D(0,0,5),wcPt3D(0,0,0),wcPt3D(0,1,0));
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -470,7 +478,10 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 //viewing shit
 
-wcPt3D camera,u,v,n;
+wcPt3D camera (0,0,0);
+wcPt3D u (0,0,0);
+wcPt3D v (0,0,0);
+wcPt3D n (0,0,0);
 
 //left mouse   - rotate around up axis(viewing yaxis)
 //right mouse  - 
