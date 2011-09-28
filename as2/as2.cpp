@@ -78,23 +78,23 @@ void meshReader (char *filename,int sign)
 
   fp = fopen(filename, "r");
   if (fp == NULL) { 
-    printf("Cannot open %s\n!", filename);
-    exit(0);
+	printf("Cannot open %s\n!", filename);
+	exit(0);
   }
 
   // Count the number of vertices and faces
   while(!feof(fp))
-    {
-      fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
-      if (letter == 'v')
+	{
+	  fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
+	  if (letter == 'v')
 	{
 	  verts++;
 	}
-      else
+	  else
 	{
 	  faces++;
 	}
-    }
+	}
 
   fclose(fp);
 
@@ -110,71 +110,71 @@ void meshReader (char *filename,int sign)
 
   // Read the veritces
   for(i = 0;i < verts;i++)
-    {
-      fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
-      vertList[i].x = x;
-      vertList[i].y = y;
-      vertList[i].z = z;
-    }
+	{
+	  fscanf(fp,"%c %f %f %f\n",&letter,&x,&y,&z);
+	  vertList[i].x = x;
+	  vertList[i].y = y;
+	  vertList[i].z = z;
+	}
 
   // Read the faces
   for(i = 0;i < faces;i++)
-    {
-      fscanf(fp,"%c %d %d %d %d\n",&letter,&ix,&iy,&iz,&ii);
-      faceList[i].v1 = ix - 1;
-      faceList[i].v2 = iy - 1;
-      faceList[i].v3 = iz - 1;
+	{
+	  fscanf(fp,"%c %d %d %d %d\n",&letter,&ix,&iy,&iz,&ii);
+	  faceList[i].v1 = ix - 1;
+	  faceList[i].v2 = iy - 1;
+	  faceList[i].v3 = iz - 1;
 	  faceList[i].v4 = ii - 1;
-    }
+	}
   fclose(fp);
 
 
   // The part below calculates the normals of each vertex
   normCount = (int *)malloc(sizeof(int)*verts);
   for (i = 0;i < verts;i++)
-    {
-      normList[i].x = normList[i].y = normList[i].z = 0.0;
-      normCount[i] = 0;
-    }
+	{
+	  normList[i].x = normList[i].y = normList[i].z = 0.0;
+	  normCount[i] = 0;
+	}
 
   for(i = 0;i < faces;i++)
-    {
-      v1.x = vertList[faceList[i].v2].x - vertList[faceList[i].v1].x;
-      v1.y = vertList[faceList[i].v2].y - vertList[faceList[i].v1].y;
-      v1.z = vertList[faceList[i].v2].z - vertList[faceList[i].v1].z;
-      v2.x = vertList[faceList[i].v3].x - vertList[faceList[i].v2].x;
-      v2.y = vertList[faceList[i].v3].y - vertList[faceList[i].v2].y;
-      v2.z = vertList[faceList[i].v3].z - vertList[faceList[i].v2].z;
+	{
+	  v1.x = vertList[faceList[i].v2].x - vertList[faceList[i].v1].x;
+	  v1.y = vertList[faceList[i].v2].y - vertList[faceList[i].v1].y;
+	  v1.z = vertList[faceList[i].v2].z - vertList[faceList[i].v1].z;
+	  v2.x = vertList[faceList[i].v3].x - vertList[faceList[i].v2].x;
+	  v2.y = vertList[faceList[i].v3].y - vertList[faceList[i].v2].y;
+	  v2.z = vertList[faceList[i].v3].z - vertList[faceList[i].v2].z;
 
-      crossP.x = v1.y*v2.z - v1.z*v2.y;
-      crossP.y = v1.z*v2.x - v1.x*v2.z;
-      crossP.z = v1.x*v2.y - v1.y*v2.x;
+	  crossP.x = v1.y*v2.z - v1.z*v2.y;
+	  crossP.y = v1.z*v2.x - v1.x*v2.z;
+	  crossP.z = v1.x*v2.y - v1.y*v2.x;
 
-      len = sqrt(crossP.x*crossP.x + crossP.y*crossP.y + crossP.z*crossP.z);
+	  len = sqrt(crossP.x*crossP.x + crossP.y*crossP.y + crossP.z*crossP.z);
 
-      crossP.x = -crossP.x/len;
-      crossP.y = -crossP.y/len;
-      crossP.z = -crossP.z/len;
+	  crossP.x = -crossP.x/len;
+	  crossP.y = -crossP.y/len;
+	  crossP.z = -crossP.z/len;
 
-      normList[faceList[i].v1].x = normList[faceList[i].v1].x + crossP.x;
-      normList[faceList[i].v1].y = normList[faceList[i].v1].y + crossP.y;
-      normList[faceList[i].v1].z = normList[faceList[i].v1].z + crossP.z;
-      normList[faceList[i].v2].x = normList[faceList[i].v2].x + crossP.x;
-      normList[faceList[i].v2].y = normList[faceList[i].v2].y + crossP.y;
-      normList[faceList[i].v2].z = normList[faceList[i].v2].z + crossP.z;
-      normList[faceList[i].v3].x = normList[faceList[i].v3].x + crossP.x;
-      normList[faceList[i].v3].y = normList[faceList[i].v3].y + crossP.y;
-      normList[faceList[i].v3].z = normList[faceList[i].v3].z + crossP.z;
-      normCount[faceList[i].v1]++;
-      normCount[faceList[i].v2]++;
-      normCount[faceList[i].v3]++;
-    }
+	  normList[faceList[i].v1].x = normList[faceList[i].v1].x + crossP.x;
+	  normList[faceList[i].v1].y = normList[faceList[i].v1].y + crossP.y;
+	  normList[faceList[i].v1].z = normList[faceList[i].v1].z + crossP.z;
+	  normList[faceList[i].v2].x = normList[faceList[i].v2].x + crossP.x;
+	  normList[faceList[i].v2].y = normList[faceList[i].v2].y + crossP.y;
+	  normList[faceList[i].v2].z = normList[faceList[i].v2].z + crossP.z;
+	  normList[faceList[i].v3].x = normList[faceList[i].v3].x + crossP.x;
+	  normList[faceList[i].v3].y = normList[faceList[i].v3].y + crossP.y;
+	  normList[faceList[i].v3].z = normList[faceList[i].v3].z + crossP.z;
+	  normCount[faceList[i].v1]++;
+	  normCount[faceList[i].v2]++;
+	  normCount[faceList[i].v3]++;
+	}
   for (i = 0;i < verts;i++)
-    {
-      normList[i].x = (float)sign*normList[i].x / (float)normCount[i];
-      normList[i].y = (float)sign*normList[i].y / (float)normCount[i];
-      normList[i].z = (float)sign*normList[i].z / (float)normCount[i];
-    }
+	{
+	  normList[i].x = (float)sign*normList[i].x / (float)normCount[i];
+	  normList[i].y = (float)sign*normList[i].y / (float)normCount[i];
+	  normList[i].z = (float)sign*normList[i].z / (float)normCount[i];
+	}
 
 }
 
@@ -184,10 +184,10 @@ void meshReader (char *filename,int sign)
 // You should redraw your polygons here
 void	display(void)
 {
-    // Clear the background
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Clear the background
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    
-    if (PERSPECTIVE) {
+	if (PERSPECTIVE) {
 		glLoadIdentity();
 		//calculate carthesian coords from spherical coords
 		c.x = rho*sin(toRads(phi))*cos(toRads(theta));
@@ -202,12 +202,12 @@ void	display(void)
 		// Set the camera position, orientation and target
 		gluLookAt(c.x,c.y,c.z,  c.lx,c.ly,c.lz,  c.ux,c.uy,c.uz);
 		//gluLookAt(0,5,5, 0,-2,0, 0,1,0);
-    }
+	}
 
-    
+	
 
 	if(AXIS){
-    // Draw a red line
+	// Draw a red line
 		glColor3f(1,0,0);
 		glBegin(GL_LINES);
 			glVertex3f(0.0,0.0,0.0);
@@ -221,7 +221,7 @@ void	display(void)
 			glVertex3f(0.0,10.0,0.0);
 		glEnd();
 
-    // Draw a green line
+	// Draw a green line
 		glColor3f(0,1,0);
 		glBegin(GL_LINES);
 			glVertex3f(10.0,0.0,0.0);
@@ -272,27 +272,27 @@ void	display(void)
 		
 	}
 
-    // (Note that the origin is lower left corner)
-    // (Note also that the window spans (0,1) )
-    // Finish drawing, update the frame buffer, and swap buffers
-    glutSwapBuffers();
+	// (Note that the origin is lower left corner)
+	// (Note also that the window spans (0,1) )
+	// Finish drawing, update the frame buffer, and swap buffers
+	glutSwapBuffers();
 }
 
 // This function is called whenever the window is resized. 
 // Parameters are the new dimentions of the window
 void	resize(int x,int y)
 {
-    glViewport(0,0,x,y);
-    window_width = x;
-    window_height = y;
-    if (PERSPECTIVE) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        gluPerspective(60,(GLdouble) window_width/window_height,0.01, 10000);
+	glViewport(0,0,x,y);
+	window_width = x;
+	window_height = y;
+	if (PERSPECTIVE) {
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(60,(GLdouble) window_width/window_height,0.01, 10000);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-    }
-    printf("Resized to %d %d\n",x,y);
+	}
+	printf("Resized to %d %d\n",x,y);
 }
 
 // This function is called whenever the mouse is pressed or released
@@ -301,7 +301,7 @@ void	resize(int x,int y)
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseButton(int button,int state,int x,int y)
 {
-    printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
+	printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
 	if (button == LEFTM) MOUSE = LEFTM;
 	if (button == MIDDLEM) MOUSE = MIDDLEM;
 	if (button == RIGHTM) MOUSE = RIGHTM;
@@ -337,11 +337,11 @@ void	mouseMotion(int x, int y)
 // x and y are the location of the mouse
 void	keyboard(unsigned char key, int x, int y)
 {
-    switch(key) {
-    case 'q':                           /* Quit */
+	switch(key) {
+	case 'q':                           /* Quit */
 		exit(1);
 		break;
-    case 'a':
+	case 'a':
 		if(AXIS)
 			AXIS = OFF;
 		else
@@ -361,9 +361,9 @@ void	keyboard(unsigned char key, int x, int y)
 			Points = ON;
 		}
 		break;
-    case 'P':
+	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
-        if(PERSPECTIVE) {
+		if(PERSPECTIVE) {
 			// Orthogonal Projection 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -383,38 +383,38 @@ void	keyboard(unsigned char key, int x, int y)
 			glLoadIdentity();
 		}
 		break;
-    default:
+	default:
 		break;
-    }
+	}
 
-    // Schedule a new display event
-    glutPostRedisplay();
+	// Schedule a new display event
+	glutPostRedisplay();
 }
 
 // Here's the main
 int main(int argc, char* argv[])
 {
-    // Initialize GLUT 
+	// Initialize GLUT 
 	meshReader("Shape.obj", 1);
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutCreateWindow("Assignment 2 Template (orthogonal)");
-    glutDisplayFunc(display);
-    glutReshapeFunc(resize);
-    glutMouseFunc(mouseButton);
-    glutMotionFunc(mouseMotion);
-    glutKeyboardFunc(keyboard);
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutCreateWindow("Assignment 2 Template (orthogonal)");
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+	glutMouseFunc(mouseButton);
+	glutMotionFunc(mouseMotion);
+	glutKeyboardFunc(keyboard);
 	
 
-    // Initialize GL
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-2.5,2.5,-2.5,2.5,-10000,10000);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnable(GL_DEPTH_TEST);
+	// Initialize GL
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-2.5,2.5,-2.5,2.5,-10000,10000);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glEnable(GL_DEPTH_TEST);
 
-    // Switch to main loop
-    glutMainLoop();
-    return 0;        
+	// Switch to main loop
+	glutMainLoop();
+	return 0;        
 }
