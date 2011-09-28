@@ -21,7 +21,6 @@ double Rotz2 = 0.0;
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
 
-
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
 typedef struct _point {
@@ -30,14 +29,25 @@ typedef struct _point {
 
 class wcPt3D {
 public:
+	wcPt3D (GLfloat,GLfloat,GLfloat);
 	GLfloat x,y,z;
 };
+wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
+	x=ix;
+	y=iy;
+	z=iz;
+}
 
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
+ WorldMatrix TheBegining;
+ wcPt3D WorldOrigin (0,0,0);
 
  void rotateX(GLfloat, WorldMatrix);
+ void rotateY(GLfloat, WorldMatrix, WorldMatrix);
+ void rotateZ(GLfloat, WorldMatrix);
  void scale3D(GLfloat, GLfloat, GLfloat, wcPt3D, WorldMatrix);
+ void myLookAt(wcPt3D,wcPt3D,wcPt3D);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -52,6 +62,7 @@ public:
 		matIdent4x4[2][2] = 1;
 		matIdent4x4[3][3] = 1;
  }
+
 
 typedef struct _faceStruct {
   int v1,v2,v3;
@@ -175,8 +186,6 @@ void meshReader (char *filename,int sign)
 
 }
 
-
-
 // The display function. It is called whenever the window needs
 // redrawing (ie: overlapping window moves, resize, maximize)
 // You should redraw your polygons here
@@ -188,7 +197,8 @@ void	display(void)
 	if (PERSPECTIVE) {
 		glLoadIdentity();
 		// Set the camera position, orientation and target
-		gluLookAt(0,0,5, 0,0,0, 0,1,0);
+		//myLookAt(0,0,5, 0,0,0, 0,1,0);
+		myLookAt(wcPt3D(0,0,5),wcPt3D(0,0,0),wcPt3D(0,1,0));
 	}
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -213,21 +223,21 @@ void	display(void)
 
 	glColor3f(0,0,1);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(3,0,0);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x+3,WorldOrigin.y,WorldOrigin.z);
 	glEnd();
 
 	glColor3f(1,0,0);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(0,3,0);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y+3,WorldOrigin.z);
 	glEnd();
 
 	// Draw a green line
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(0,0,3);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z+3);
 	glEnd();
 
 
@@ -249,7 +259,6 @@ void	display(void)
 	glutSwapBuffers();
 }
 
-
 // This function is called whenever the window is resized. 
 // Parameters are the new dimentions of the window
 void	resize(int x,int y)
@@ -267,7 +276,6 @@ void	resize(int x,int y)
 	printf("Resized to %d %d\n",x,y);
 }
 
-
 // This function is called whenever the mouse is pressed or released
 // button is a number 0 to 2 designating the button
 // state is 1 for release 0 for press event
@@ -277,7 +285,6 @@ void	mouseButton(int button,int state,int x,int y)
 	printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
 }
 
-
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
@@ -285,12 +292,12 @@ void	mouseMotion(int x, int y)
 	printf("Mouse is at %d, %d\n", x,y);
 }
 
-
 // This function is called whenever there is a keyboard input
 // key is the ASCII value of the key pressed
 // x and y are the location of the mouse
 void	keyboard(unsigned char key, int x, int y)
 {
+	wcPt3D pt3(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
 	switch(key) {
 	case '':                           /* Quit */
 		exit(1);
@@ -343,11 +350,8 @@ void	keyboard(unsigned char key, int x, int y)
 		MotionMatrix[0][3] = Rotx*cos(-.1745329) - MotionMatrix[1][3]*sin(-.1745329);
 		MotionMatrix[1][3] = Rotx*sin(-.1745329) + MotionMatrix[1][3]*cos(-.1745329);
 		break;
-	case '=':
-		wcPt3D pt3;
-		pt3.x = MotionMatrix[0][3];
-		pt3.y = MotionMatrix[1][3];
-		pt3.z = MotionMatrix[2][3];
+
+	case '=':		
 		scale3D(1.25,1.25,1.25,pt3,MotionMatrix);
 		break;
 	case'-':
@@ -376,6 +380,56 @@ void	keyboard(unsigned char key, int x, int y)
 		MotionMatrix[1][3] = 0;
 		MotionMatrix[2][3] = 0;
 	rotateX(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case'k':
+		//Rotx = MotionMatrix[0][3];
+		//Roty = MotionMatrix[1][3];
+		//Rotz = MotionMatrix[2][3];
+		//MotionMatrix[0][3] = 0;
+		//MotionMatrix[1][3] = 0;
+		//MotionMatrix[2][3] = 0;
+	rotateY(-.1745329, MotionMatrix, TheBegining);
+	matrix4x4SetIdentity(TheBegining);
+		//MotionMatrix[0][3] = Rotx;
+		//MotionMatrix[1][3] = Roty;
+		//MotionMatrix[2][3] = Rotz;
+		break;
+	case'l':
+		//Rotx = MotionMatrix[0][3];
+		//Roty = MotionMatrix[1][3];
+		//Rotz = MotionMatrix[2][3];
+		//MotionMatrix[0][3] = 0;
+		//MotionMatrix[1][3] = 0;
+		//MotionMatrix[2][3] = 0;
+	rotateY(.1745329, MotionMatrix, TheBegining);
+	matrix4x4SetIdentity(TheBegining);
+		//MotionMatrix[0][3] = Rotx;
+		//MotionMatrix[1][3] = Roty;
+		//MotionMatrix[2][3] = Rotz;
+		break;
+	case'm':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateZ(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case',':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateZ(.1745329, MotionMatrix);
 		MotionMatrix[0][3] = Rotx;
 		MotionMatrix[1][3] = Roty;
 		MotionMatrix[2][3] = Rotz;
@@ -410,13 +464,14 @@ void	keyboard(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-
 // Here's the main
 int main(int argc, char* argv[])
 {
 	// Initialize GLUT
 	meshReader("tetrahedron.obj",0);
 	matrix4x4SetIdentity(MotionMatrix);
+	matrix4x4SetIdentity(TheBegining);
+	WorldOrigin.x = WorldOrigin.y = WorldOrigin.z = 0;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Assignment 2 Template (orthogonal)");
@@ -523,15 +578,43 @@ void rotateX(GLfloat radians, WorldMatrix matJ)
 	matrix4x4Multiply(Rx, matJ);
 
 }
+void rotateY(GLfloat radians, WorldMatrix matK, WorldMatrix Original)
+{
+	WorldMatrix Ry;
+	matrix4x4SetIdentity(Ry);
+	Ry[0][0] = cos(radians);
+	Ry[0][2] = sin(radians);
+	Ry[2][0] = -sin(radians);
+	Ry[2][2] = cos(radians);
+	matrix4x4Multiply(Ry, Original);
+	matrix4x4Multiply(Original, matK);
+}
+void rotateZ(GLfloat radians, WorldMatrix matI)
+{
+	WorldMatrix Rz;
+	matrix4x4SetIdentity(Rz);
+	Rz[0][0] = cos(radians);
+	Rz[0][1] = -sin(radians);
+	Rz[1][0] = sin(radians);
+	Rz[1][1] = cos(radians);
+
+	matrix4x4Multiply(Rz, matI);
+}
 
 //viewing shit
 
-wcPt3D camera,u,v,n;
+wcPt3D camera (0,0,0);
+wcPt3D u (0,0,0);
+wcPt3D v (0,0,0);
+wcPt3D n (0,0,0);
 
 //left mouse   - rotate around up axis(viewing yaxis)
 //right mouse  - 
 //middle mouse - 
 void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, center is look at pt
+	WorldMatrix Mvw;
+	matrix4x4SetIdentity(Mvw);
+
 	// p2-p1 for n
 	n.x = eye.x - center.x;
 	n.y = eye.y - center.y;
@@ -555,11 +638,38 @@ void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, cente
 	u.y = (v.x*(-n.z))-(v.z*(-n.x));
 	u.z = (v.x*(-n.y))-(v.y*(-n.x));
 
+	//VxN
 	GLfloat VN = sqrt(pow((v.y*(-n.z))-(v.z*(-n.y)),2)+pow((v.x*(-n.z))-(v.z*(-n.x)),2)+pow((v.x*(-n.y))-(v.y*(-n.x)),2));
 
+	//VxN/norm(VxN)
 	u.x /= VN;
 	u.y /= VN;
 	u.z /= VN;
 
+	//nxu
+	v.x = (n.y*u.z)-(n.z*u.y);
+	v.y = (n.x*u.z)-(n.z*u.x);
+	v.z = (n.x*u.y)-(n.y*u.x);
 
+	//now for m_vw (world frame in viewing coords)
+	Mvw[0][0] = u.x;
+	Mvw[0][1] = u.y;
+	Mvw[0][2] = u.z;
+	Mvw[0][3] = eye.x*u.x+eye.y*u.y+eye.z*u.z;
+	Mvw[1][0] = v.x;
+	Mvw[1][1] = v.y;
+	Mvw[1][2] = v.z;
+	Mvw[1][3] = eye.x*v.x+eye.y*v.y+eye.z*v.z;
+	Mvw[2][0] = n.x;
+	Mvw[2][1] = n.y;
+	Mvw[2][2] = n.z;
+	Mvw[2][3] = eye.x*n.x+eye.y*n.y+eye.z*n.z;
+
+	//multiply world motion by M_vw
+	matrix4x4Multiply(Mvw,MotionMatrix);
+
+	//move the origin to eye
+	WorldOrigin.x = eye.x;
+	WorldOrigin.y = eye.y;
+	WorldOrigin.z = eye.z;
 }
