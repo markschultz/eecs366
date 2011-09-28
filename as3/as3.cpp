@@ -54,6 +54,7 @@ wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
  void rotateY(GLfloat, WorldMatrix, WorldMatrix);
  void rotateZ(GLfloat, WorldMatrix);
  void scale3D(GLfloat, GLfloat, GLfloat, wcPt3D, WorldMatrix);
+ void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
  void myLookAt(wcPt3D,wcPt3D,wcPt3D);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
