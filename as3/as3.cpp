@@ -46,10 +46,14 @@ wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
 
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
+ WorldMatrix TheBegining;
  wcPt3D WorldOrigin (0,0,0);
  wcPt3D camera (0,0,0);
 
- void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
+ void rotateX(GLfloat, WorldMatrix);
+ void rotateY(GLfloat, WorldMatrix, WorldMatrix);
+ void rotateZ(GLfloat, WorldMatrix);
+ void scale3D(GLfloat, GLfloat, GLfloat, wcPt3D, WorldMatrix);
  void myLookAt(wcPt3D,wcPt3D,wcPt3D);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
@@ -65,6 +69,7 @@ wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
 		matIdent4x4[2][2] = 1;
 		matIdent4x4[3][3] = 1;
  }
+
 
 typedef struct _faceStruct {
   int v1,v2,v3;
@@ -325,6 +330,7 @@ void	mouseMotion(int x, int y)
 // x and y are the location of the mouse
 void	keyboard(unsigned char key, int x, int y)
 {
+	wcPt3D pt3(MotionMatrix[0][3],MotionMatrix[1][3],MotionMatrix[2][3]);
 	switch(key) {
 	case '':                           /* Quit */
 		exit(1);
@@ -362,7 +368,7 @@ void	keyboard(unsigned char key, int x, int y)
 		MotionMatrix[2][3] = Rotz*cos(.1745329) - MotionMatrix[0][3]*sin(.1745329);
 		MotionMatrix[0][3] = Rotz*sin(.1745329) + MotionMatrix[0][3]*cos(.1745329); 
 		break;
-	case'"':
+	case '\'':
 		Rotz = MotionMatrix[2][3];
 		MotionMatrix[2][3] = Rotz*cos(-.1745329) - MotionMatrix[0][3]*sin(-.1745329);
 		MotionMatrix[0][3] = Rotz*sin(-.1745329) + MotionMatrix[0][3]*cos(-.1745329); 
@@ -376,6 +382,90 @@ void	keyboard(unsigned char key, int x, int y)
 		Rotx = MotionMatrix[0][3];
 		MotionMatrix[0][3] = Rotx*cos(-.1745329) - MotionMatrix[1][3]*sin(-.1745329);
 		MotionMatrix[1][3] = Rotx*sin(-.1745329) + MotionMatrix[1][3]*cos(-.1745329);
+		break;
+
+	case '=':		
+		scale3D(1.25,1.25,1.25,pt3,MotionMatrix);
+		break;
+	case'-':
+		pt3.x = MotionMatrix[0][3];
+		pt3.y = MotionMatrix[1][3];
+		pt3.z = MotionMatrix[2][3];
+		scale3D(.75,.75 ,.75,pt3,MotionMatrix);
+		break;
+	case'i':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateX(-.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case'o':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateX(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case'k':
+		//Rotx = MotionMatrix[0][3];
+		//Roty = MotionMatrix[1][3];
+		//Rotz = MotionMatrix[2][3];
+		//MotionMatrix[0][3] = 0;
+		//MotionMatrix[1][3] = 0;
+		//MotionMatrix[2][3] = 0;
+	rotateY(-.1745329, MotionMatrix, TheBegining);
+	matrix4x4SetIdentity(TheBegining);
+		//MotionMatrix[0][3] = Rotx;
+		//MotionMatrix[1][3] = Roty;
+		//MotionMatrix[2][3] = Rotz;
+		break;
+	case'l':
+		//Rotx = MotionMatrix[0][3];
+		//Roty = MotionMatrix[1][3];
+		//Rotz = MotionMatrix[2][3];
+		//MotionMatrix[0][3] = 0;
+		//MotionMatrix[1][3] = 0;
+		//MotionMatrix[2][3] = 0;
+	rotateY(.1745329, MotionMatrix, TheBegining);
+	matrix4x4SetIdentity(TheBegining);
+		//MotionMatrix[0][3] = Rotx;
+		//MotionMatrix[1][3] = Roty;
+		//MotionMatrix[2][3] = Rotz;
+		break;
+	case'm':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateZ(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case',':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateZ(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
 		break;
 	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
@@ -413,6 +503,7 @@ int main(int argc, char* argv[])
 	// Initialize GLUT
 	meshReader("tetrahedron.obj",0);
 	matrix4x4SetIdentity(MotionMatrix);
+	matrix4x4SetIdentity(TheBegining);
 	WorldOrigin.x = WorldOrigin.y = WorldOrigin.z = 0;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -507,6 +598,40 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 	//inverse initial translation and multiply with first 2
 	translate3D(p1.x, p1.y, p1.z, matM);
+}
+void rotateX(GLfloat radians, WorldMatrix matJ)
+{
+	WorldMatrix Rx;
+	matrix4x4SetIdentity(Rx);
+	Rx[1][1] = cos(radians);
+	Rx[1][2] = -sin(radians);
+	Rx[2][1] = sin(radians);
+	Rx[2][2] = cos(radians);
+
+	matrix4x4Multiply(Rx, matJ);
+
+}
+void rotateY(GLfloat radians, WorldMatrix matK, WorldMatrix Original)
+{
+	WorldMatrix Ry;
+	matrix4x4SetIdentity(Ry);
+	Ry[0][0] = cos(radians);
+	Ry[0][2] = sin(radians);
+	Ry[2][0] = -sin(radians);
+	Ry[2][2] = cos(radians);
+	matrix4x4Multiply(Ry, Original);
+	matrix4x4Multiply(Original, matK);
+}
+void rotateZ(GLfloat radians, WorldMatrix matI)
+{
+	WorldMatrix Rz;
+	matrix4x4SetIdentity(Rz);
+	Rz[0][0] = cos(radians);
+	Rz[0][1] = -sin(radians);
+	Rz[1][0] = sin(radians);
+	Rz[1][1] = cos(radians);
+
+	matrix4x4Multiply(Rz, matI);
 }
 
 //viewing shit
