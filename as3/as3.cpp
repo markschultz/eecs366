@@ -21,10 +21,6 @@ double Rotz2 = 0.0;
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
 
-class wcPt3D {
-public:
-	GLfloat x,y,z;
-};
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -40,7 +36,8 @@ public:
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
 
- void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
+ void rotateX(GLfloat, WorldMatrix);
+ void scale3D(GLfloat, GLfloat, GLfloat, wcPt3D, WorldMatrix);
 
  void matrix4x4SetIdentity (WorldMatrix matIdent4x4)
  {
@@ -331,7 +328,7 @@ void	keyboard(unsigned char key, int x, int y)
 		MotionMatrix[2][3] = Rotz*cos(.1745329) - MotionMatrix[0][3]*sin(.1745329);
 		MotionMatrix[0][3] = Rotz*sin(.1745329) + MotionMatrix[0][3]*cos(.1745329); 
 		break;
-	case'"':
+	case '\'':
 		Rotz = MotionMatrix[2][3];
 		MotionMatrix[2][3] = Rotz*cos(-.1745329) - MotionMatrix[0][3]*sin(-.1745329);
 		MotionMatrix[0][3] = Rotz*sin(-.1745329) + MotionMatrix[0][3]*cos(-.1745329); 
@@ -345,6 +342,43 @@ void	keyboard(unsigned char key, int x, int y)
 		Rotx = MotionMatrix[0][3];
 		MotionMatrix[0][3] = Rotx*cos(-.1745329) - MotionMatrix[1][3]*sin(-.1745329);
 		MotionMatrix[1][3] = Rotx*sin(-.1745329) + MotionMatrix[1][3]*cos(-.1745329);
+		break;
+	case '=':
+		wcPt3D pt3;
+		pt3.x = MotionMatrix[0][3];
+		pt3.y = MotionMatrix[1][3];
+		pt3.z = MotionMatrix[2][3];
+		scale3D(1.25,1.25,1.25,pt3,MotionMatrix);
+		break;
+	case'-':
+		pt3.x = MotionMatrix[0][3];
+		pt3.y = MotionMatrix[1][3];
+		pt3.z = MotionMatrix[2][3];
+		scale3D(.75,.75 ,.75,pt3,MotionMatrix);
+		break;
+	case'i':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateX(-.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
+		break;
+	case'o':
+		Rotx = MotionMatrix[0][3];
+		Roty = MotionMatrix[1][3];
+		Rotz = MotionMatrix[2][3];
+		MotionMatrix[0][3] = 0;
+		MotionMatrix[1][3] = 0;
+		MotionMatrix[2][3] = 0;
+	rotateX(.1745329, MotionMatrix);
+		MotionMatrix[0][3] = Rotx;
+		MotionMatrix[1][3] = Roty;
+		MotionMatrix[2][3] = Rotz;
 		break;
 	case 'P':
 	// Toggle Projection Type (orthogonal, perspective)
@@ -476,6 +510,18 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 	//inverse initial translation and multiply with first 2
 	translate3D(p1.x, p1.y, p1.z, matM);
+}
+void rotateX(GLfloat radians, WorldMatrix matJ)
+{
+	WorldMatrix Rx;
+	matrix4x4SetIdentity(Rx);
+	Rx[1][1] = cos(radians);
+	Rx[1][2] = -sin(radians);
+	Rx[2][1] = sin(radians);
+	Rx[2][2] = cos(radians);
+
+	matrix4x4Multiply(Rx, matJ);
+
 }
 
 //viewing shit
