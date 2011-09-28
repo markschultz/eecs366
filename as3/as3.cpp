@@ -21,11 +21,6 @@ double Rotz2 = 0.0;
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
 
-class wcPt3D {
-public:
-	GLfloat x,y,z;
-};
-
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
 typedef struct _point {
@@ -39,6 +34,7 @@ public:
 
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
+ wcPt3D WorldOrigin;
 
  void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
 
@@ -216,21 +212,21 @@ void	display(void)
 
 	glColor3f(0,0,1);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(3,0,0);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x+3,WorldOrigin.y,WorldOrigin.z);
 	glEnd();
 
 	glColor3f(1,0,0);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(0,3,0);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y+3,WorldOrigin.z);
 	glEnd();
 
 	// Draw a green line
 	glColor3f(0,1,0);
 	glBegin(GL_LINES);
-		glVertex3f(0,0,0);
-		glVertex3f(0,0,3);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z);
+		glVertex3f(WorldOrigin.x,WorldOrigin.y,WorldOrigin.z+3);
 	glEnd();
 
 
@@ -486,6 +482,9 @@ wcPt3D camera,u,v,n;
 //right mouse  - 
 //middle mouse - 
 void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, center is look at pt
+	WorldMatrix Mvw;
+	matrix4x4SetIdentity(Mvw);
+
 	// p2-p1 for n
 	n.x = eye.x - center.x;
 	n.y = eye.y - center.y;
@@ -509,11 +508,36 @@ void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, cente
 	u.y = (v.x*(-n.z))-(v.z*(-n.x));
 	u.z = (v.x*(-n.y))-(v.y*(-n.x));
 
+	//VxN
 	GLfloat VN = sqrt(pow((v.y*(-n.z))-(v.z*(-n.y)),2)+pow((v.x*(-n.z))-(v.z*(-n.x)),2)+pow((v.x*(-n.y))-(v.y*(-n.x)),2));
 
+	//VxN/norm(VxN)
 	u.x /= VN;
 	u.y /= VN;
 	u.z /= VN;
 
+	//nxu
+	v.x = (n.y*u.z)-(n.z*u.y);
+	v.y = (n.x*u.z)-(n.z*u.x);
+	v.z = (n.x*u.y)-(n.y*u.x);
+
+	//now for m_vw (world frame in viewing coords)
+	Mvw[0][0] = u.x;
+	Mvw[0][1] = u.y;
+	Mvw[0][2] = u.z;
+	Mvw[0][3] = eye.x*u.x+eye.y*u.y+eye.z*u.z;
+	Mvw[1][0] = v.x;
+	Mvw[1][1] = v.y;
+	Mvw[1][2] = v.z;
+	Mvw[1][3] = eye.x*v.x+eye.y*v.y+eye.z*v.z;
+	Mvw[2][0] = n.x;
+	Mvw[2][1] = n.y;
+	Mvw[2][2] = n.z;
+	Mvw[2][3] = eye.x*n.x+eye.y*n.y+eye.z*n.z;
+
+	//multiply world motion by M_vw
+	matrix4x4Multiply(Mvw,MotionMatrix);
+
+	//move the origin to eye
 
 }
