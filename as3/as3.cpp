@@ -11,6 +11,9 @@
 #define ON 1
 #define OFF 0
 
+int MOUSE = -1;
+enum {LEFTM,MIDDLEM,RIGHTM};
+enum {UP,RIGHT,DOWN,LEFT};
 double Rotx = 0.0;
 double Roty = 0.0;
 double Rotz = 0.0;
@@ -20,6 +23,9 @@ double Rotz2 = 0.0;
 // Global variables
 int window_width, window_height;    // Window dimensions
 int PERSPECTIVE = OFF;
+int VERTICAL = -1;
+int HORIZONTAL = -1;
+int previousX=150,previousY=150;
 
 // Vertex and Face data structure sued in the mesh reader
 // Feel free to change them
@@ -41,6 +47,7 @@ wcPt3D::wcPt3D (GLfloat ix,GLfloat iy,GLfloat iz) {
  typedef GLfloat WorldMatrix[4][4];
  WorldMatrix MotionMatrix;
  wcPt3D WorldOrigin (0,0,0);
+ wcPt3D camera (0,0,0);
 
  void rotate3D(wcPt3D, wcPt3D, GLfloat, WorldMatrix);
  void myLookAt(wcPt3D,wcPt3D,wcPt3D);
@@ -278,13 +285,39 @@ void	resize(int x,int y)
 void	mouseButton(int button,int state,int x,int y)
 {
 	printf("Mouse click at %d %d, button: %d, state %d\n",x,y,button,state);
+	if (button == LEFTM) MOUSE = LEFTM;
+	if (button == MIDDLEM) MOUSE = MIDDLEM;
+	if (button == RIGHTM) MOUSE = RIGHTM;
 }
 
 //This function is called whenever the mouse is moved with a mouse button held down.
 // x and y are the location of the mouse (in window-relative coordinates)
 void	mouseMotion(int x, int y)
 {
-	printf("Mouse is at %d, %d\n", x,y);
+	wcPt3D up (0,1,0);
+	if (previousY-y>0) VERTICAL = UP; else VERTICAL = DOWN;
+	if (previousX-x>0) HORIZONTAL = LEFT; else HORIZONTAL = RIGHT;
+	printf("Mouse is at %d, %d with button %d in direction %d,%d\n", x,y,MOUSE,VERTICAL,HORIZONTAL);
+	previousX=x;
+	previousY=y;
+
+	//left mouse   - rotate around up axis(viewing yaxis)
+	//middle mouse - translate along xy plane
+	//right mouse  - translate along -z
+	if (MOUSE==RIGHTM){
+		/*if(VERTICAL==UP) 
+		else if(VERTICAL==DOWN) */
+	}
+	else if (MOUSE==LEFTM){
+		if(HORIZONTAL==RIGHT) rotate3D(camera, up, .1745, MotionMatrix);
+		else if(HORIZONTAL==LEFT) rotate3D(camera, up, -.1745, MotionMatrix);
+	}
+	else if (MOUSE==MIDDLEM){
+	/*	if (VERTICAL==UP) 
+		else if (VERTICAL==DOWN) 
+		if (HORIZONTAL==RIGHT) 
+		else if (HORIZONTAL==LEFT) */
+	}
 }
 
 // This function is called whenever there is a keyboard input
@@ -478,14 +511,12 @@ void rotate3D(wcPt3D p1, wcPt3D p2, GLfloat radianAngle, WorldMatrix matM){
 
 //viewing shit
 
-wcPt3D camera (0,0,0);
+
 wcPt3D u (0,0,0);
 wcPt3D v (0,0,0);
 wcPt3D n (0,0,0);
 
-//left mouse   - rotate around up axis(viewing yaxis)
-//right mouse  - 
-//middle mouse - 
+
 void myLookAt(wcPt3D eye, wcPt3D center, wcPt3D up) { //eye is camera loc, center is look at pt
 	WorldMatrix Mvw;
 	matrix4x4SetIdentity(Mvw);
