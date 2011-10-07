@@ -171,7 +171,6 @@ void DisplayFunc()
 	glutSwapBuffers();
 }
 
-
 void ReshapeFunc(int x,int y)
 {
 	// Get the correct view proportionality for the new window size

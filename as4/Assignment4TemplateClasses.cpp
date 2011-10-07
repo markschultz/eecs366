@@ -335,30 +335,57 @@ void Camera::EnforceVectors()
 }
 
 // Calculate the new perspective projection matrix
+/*
+	fovy	  Specifies the	field of view angle, in	degrees, in
+		  the y	direction.
+
+	aspect  Specifies the aspect ratio that determines the field
+		  of view in the x direction. The aspect ratio is the
+		  ratio	of x (width) to	y (height).
+
+	zNear	  Specifies the	distance from the viewer to the	near
+		  clipping plane (always positive).
+
+	zFar	  Specifies the	distance from the viewer to the	far
+		  clipping plane (always positive).
+*/
 void Camera::Perspective(float fovy, float aspect, float zNear, float zFar)
 {
-	float f = 1.0f / tanf(fovy * (M_PI/360.0));
-	float m [16];
+	float ymax = znear * tan(fovy * M_PI/360);
+	float ymin = -ymax;
+	float xmax = ymax * aspect;
+	float xmin = ymin * aspect;
 
-	m[0] = f / aspect;
-	m[1] = 0.0;
-	m[2] = 0.0;
-	m[3] = 0.0;
+	float width = xymax - xmin;
+	float height = xymax - ymin;
 
-	m[4] = 0.0;
-	m[5] = f;
-	m[6] = 0.0;
-	m[7] = 0.0;
+	float depth = zfar - znear;
+	float q = -(zfar + znear) / depth;
+	float qn = -2 * (zfar * znear) / depth;
 
-	m[8] = 0.0;
-	m[9] = 0.0;
-	m[10] = (zFar + zNear) / (zNear - zFar);
-	m[11] = -1.0;
+	float w = 2 * znear / width;
+	w = w / aspect;
+	float h = 2 * znear / height;
 
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 2.0 * zFar * zNear / (zNear - zFar);
-	m[15] = 0.0;
+	m[0]  = w;
+	m[1]  = 0;
+	m[2]  = 0;
+	m[3]  = 0;
+
+	m[4]  = 0;
+	m[5]  = h;
+	m[6]  = 0;
+	m[7]  = 0;
+
+	m[8]  = 0;
+	m[9]  = 0;
+	m[10] = q;
+	m[11] = -1;
+
+	m[12] = 0;
+	m[13] = 0;
+	m[14] = qn;
+	m[15] = 0;
 
 	matrixMult(m);
 	 
