@@ -334,18 +334,100 @@ void Camera::EnforceVectors()
 	v.k = n.i*u.j - n.j*u.i;
 }
 
-
 // Calculate the new perspective projection matrix
-void Camera::Perspective()
+void Camera::Perspective(float fovy, float aspect, float zNear, float zFar)
 {
-	//ADD YOUR CODE HERE!!
+	float f = 1.0f / tanf(fovy * (M_PI/360.0));
+	float m [16];
+
+	m[0] = f / aspect;
+	m[1] = 0.0;
+	m[2] = 0.0;
+	m[3] = 0.0;
+
+	m[4] = 0.0;
+	m[5] = f;
+	m[6] = 0.0;
+	m[7] = 0.0;
+
+	m[8] = 0.0;
+	m[9] = 0.0;
+	m[10] = (zFar + zNear) / (zNear - zFar);
+	m[11] = -1.0;
+
+	m[12] = 0.0;
+	m[13] = 0.0;
+	m[14] = 2.0 * zFar * zNear / (zNear - zFar);
+	m[15] = 0.0;
+
+	matrixMult(m);
 	 
 }
 
 // Calculate the new orthographic projection matrix
-void Camera::Orthographic()
+void Camera::Orthographic(float left, float right, float bottom, float top, float near, float far)
 {
-	//ADD YOUR CODE HERE!!
+	float m [16];
+	float rml = right - left;
+	float fmn = far - near;
+	float tmb = top - bottom;
+	float _1over_rml;
+	float _1over_fmn;
+	float _1over_tmb;
+
+	if (rml == 0.0 || fmn == 0.0 || tmb == 0.0) {
+		//error, invalid value. do something to designate error
+		return;
+	}
+
+	_1over_rml = 1.0 / rml;
+	_1over_fmn = 1.0 / fmn;
+	_1over_tmb = 1.0 / tmb;
+
+	m[0] = 2.0 * _1over_rml;
+	m[1] = 0.0;
+	m[2] = 0.0;
+	m[3] = 0.0;
+
+	m[4] = 0.0;
+	m[5] = 2.0 * _1over_tmb;
+	m[6] = 0.0;
+	m[7] = 0.0;
+
+	m[8] = 0.0;
+	m[9] = 0.0;
+	m[10] = -2.0 * _1over_fmn;
+	m[11] = 0.0;
+
+	m[12] = -(right + left) *  _1over_rml;
+	m[13] = -(top + bottom) *  _1over_tmb;
+	m[14] = -(far + near) * _1over_fmn;
+	m[15] = 1.0;
+
+	matrixMult(m);
+}
+
+void cross_product (float a [3], float b [3], float product [3])
+{
+	product[0] = a[1] * b[2] - a[2] * b[1];
+	product[1] = a[2] * b[0] - a[0] * b[2];
+	product[2] = a[0] * b[1] - a[1] * b[0];
+}
+
+void normalize (float v [3])
+{
+	float len = sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+
+	if (len != 0.0) {
+		float scale = 1.0f / len;
+		v[0] *= scale;
+		v[1] *= scale;
+		v[2] *= scale;
+	}
+}
+
+void matrixMult(float m[16]) {
+	//need to multiply m by the motionmatrix.
 }
 
 // Calculate the new viewing transform matrix
@@ -376,31 +458,9 @@ void Camera::LookAt(float eyeX, float eyeY, float eyeZ,
 	m[2] = -f[0]; m[6] = -f[1]; m[10] = -f[2]; m[14] = 0.0;
 	m[3] =   0.0; m[7] =   0.0; m[11] =   0.0; m[15] = 1.0;
 
-	glMultMatrixf(m);
+	matrixMult(m);
 	Object::WorldTranslate(-eyeX, -eyeY, -eyeZ);
 
-}
-
-static inline
-void cross_product (float a [3], float b [3], float product [3])
-{
-	product[0] = a[1] * b[2] - a[2] * b[1];
-	product[1] = a[2] * b[0] - a[0] * b[2];
-	product[2] = a[0] * b[1] - a[1] * b[0];
-}
-
-
-static inline
-void normalize (float v [3])
-{
-	float len = sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-
-	if (len != 0.0) {
-		float scale = 1.0f / len;
-		v[0] *= scale;
-		v[1] *= scale;
-		v[2] *= scale;
-	}
 }
 
 // Transform a point with an arbitrary matrix
