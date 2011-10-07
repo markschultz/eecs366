@@ -349,42 +349,46 @@ void Camera::EnforceVectors()
 	zFar	  Specifies the	distance from the viewer to the	far
 		  clipping plane (always positive).
 */
-void Camera::Perspective(float fovy, float aspect, float zNear, float zFar)
+/*
+the m matrix is like this 
++ - - -  -  +
+| 0 4 8  12 |
+| 1 5 9  13 |
+| 2 6 10 14 |
+| 3 7 11 15 |
++ - - -  -  +
+*/
+void Camera::Perspective(float fovyInDegrees, float aspect, float zNear, float zFar)
 {
-	float ymax = znear * tan(fovy * M_PI/360);
+	float m[16];
+	float ymax = znear * tan(fovyInDegrees * M_PI/360);
 	float ymin = -ymax;
 	float xmax = ymax * aspect;
 	float xmin = ymin * aspect;
 
-	float width = xymax - xmin;
-	float height = xymax - ymin;
-
+	float width = xmax - xmin;
+	float height = ymax - ymin;
+	float temp = ;
 	float depth = zfar - znear;
-	float q = -(zfar + znear) / depth;
-	float qn = -2 * (zfar * znear) / depth;
 
-	float w = 2 * znear / width;
-	w = w / aspect;
-	float h = 2 * znear / height;
-
-	m[0]  = w;
+	m[0]  = (2.0 * znear)/width;
 	m[1]  = 0;
 	m[2]  = 0;
 	m[3]  = 0;
 
 	m[4]  = 0;
-	m[5]  = h;
+	m[5]  = (2.0 * znear)/height;
 	m[6]  = 0;
 	m[7]  = 0;
 
-	m[8]  = 0;
-	m[9]  = 0;
-	m[10] = q;
-	m[11] = -1;
+	m[8]  = (xmax+xmin)/width;
+	m[9]  = (ymax+ymin)/height;
+	m[10] = (-zfar-znear)/depth;
+	m[11] = -1.0;
 
 	m[12] = 0;
 	m[13] = 0;
-	m[14] = qn;
+	m[14] = (-(2.0 * znear)*zfar)/depth;
 	m[15] = 0;
 
 	matrixMult(m);
@@ -394,7 +398,7 @@ void Camera::Perspective(float fovy, float aspect, float zNear, float zFar)
 // Calculate the new orthographic projection matrix
 void Camera::Orthographic(float left, float right, float bottom, float top, float near, float far)
 {
-	float m [16];
+	float m[16];
 	float rml = right - left;
 	float fmn = far - near;
 	float tmb = top - bottom;
