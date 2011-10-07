@@ -282,8 +282,6 @@ Camera::Camera()
 	LookAt();
 }
 
-
-
 // Pan the camera about its local axes
 void Camera::Pan(float y, float p)
 {
@@ -351,11 +349,58 @@ void Camera::Orthographic()
 }
 
 // Calculate the new viewing transform matrix
-void Camera::LookAt()
+void Camera::LookAt(float eyeX, float eyeY, float eyeZ,
+					float centerX, float centerY, float centerZ,
+					float upX, float upY, float upZ)
 {
-	//ADD YOUR CODE HERE!!
-	
+	float m [16];
+	float f [3];
+	float u [3];
+	float s [3];
 
+	f[0] = centerX - eyeX;
+	f[1] = centerY - eyeY;
+	f[2] = centerZ - eyeZ;
+
+	u[0] = upX;
+	u[1] = upY;
+	u[2] = upZ;
+
+	normalize(f);
+	cross_product(f, u, s);
+	normalize(s);
+	cross_product(s, f, u);
+
+	m[0] =  s[0]; m[4] =  s[1]; m[8] =   s[2]; m[12] = 0.0;
+	m[1] =  u[0]; m[5] =  u[1]; m[9] =   u[2]; m[13] = 0.0;
+	m[2] = -f[0]; m[6] = -f[1]; m[10] = -f[2]; m[14] = 0.0;
+	m[3] =   0.0; m[7] =   0.0; m[11] =   0.0; m[15] = 1.0;
+
+	glMultMatrixf(m);
+	Object::WorldTranslate(-eyeX, -eyeY, -eyeZ);
+
+}
+
+static inline
+void cross_product (float a [3], float b [3], float product [3])
+{
+	product[0] = a[1] * b[2] - a[2] * b[1];
+	product[1] = a[2] * b[0] - a[0] * b[2];
+	product[2] = a[0] * b[1] - a[1] * b[0];
+}
+
+
+static inline
+void normalize (float v [3])
+{
+	float len = sqrtf(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+
+	if (len != 0.0) {
+		float scale = 1.0f / len;
+		v[0] *= scale;
+		v[1] *= scale;
+		v[2] *= scale;
+	}
 }
 
 // Transform a point with an arbitrary matrix

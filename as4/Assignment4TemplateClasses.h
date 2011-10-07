@@ -58,7 +58,9 @@ public:
 	void EnforceVectors();
 	void Perspective();
 	void Orthographic();
-	void LookAt();
+	void LookAt(float eyeX, float eyeY, float eyeZ,
+				float centerX, float centerY, float centerZ,
+				float upX, float upY, float upZ);
 	Vertex Position;
 	float Pitch, Yaw;
 	Vector n;
