@@ -158,11 +158,6 @@ void DisplayFunc()
 			glVertex2f(temp3.x/temp3.h, temp3.y/temp3.h);
 			glEnd();
 			glLineWidth(1.0);
-			glBegin(GL_LINES);
-				glVertex3f(0,0,0);
-				glVertex3f(1,0,0);
-			glEnd();
-
 		}
 
 		if(ShowBoundingBoxes)
