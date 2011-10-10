@@ -56,11 +56,10 @@ public:
 	void ScaleView(float s);
 	void MoveView(float d);
 	void EnforceVectors();
-	void Perspective();
-	void Orthographic();
-	void LookAt(float eyeX, float eyeY, float eyeZ,
-				float centerX, float centerY, float centerZ,
-				float upX, float upY, float upZ);
+	void Perspective(float fovyInDegrees, float aspect, float zNear, float zFar);
+	void Orthographic(float left, float right, float bottom, float top, float near, float far);
+	void LookAt();
+	void LookAtMove(float,float,float);
 	Vertex Position;
 	float Pitch, Yaw;
 	Vector n;

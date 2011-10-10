@@ -6,7 +6,6 @@
 #include "Assignment4TemplateClasses.h"
 
 using namespace std;
-
 Vertex::Vertex()
 {
 	x = y = z = 0;
@@ -282,6 +281,14 @@ Camera::Camera()
 	LookAt();
 }
 
+void Camera::LookAtMove(float tx, float ty, float tz)
+{
+	Position.x += tz*n.i + ty*v.i + tx*u.i;
+	Position.y += tz*n.j + ty*v.j + tx*u.j;
+	Position.z += tz*n.k + ty*v.k + tx*u.k;
+	LookAt();
+}
+
 // Pan the camera about its local axes
 void Camera::Pan(float y, float p)
 {
@@ -361,37 +368,34 @@ the m matrix is like this
 void Camera::Perspective(float fovyInDegrees, float aspect, float zNear, float zFar)
 {
 	float m[16];
-	float ymax = znear * tan(fovyInDegrees * M_PI/360);
+	float ymax = zNear * tan(fovyInDegrees * M_PI/360);
 	float ymin = -ymax;
 	float xmax = ymax * aspect;
 	float xmin = ymin * aspect;
 
 	float width = xmax - xmin;
 	float height = ymax - ymin;
-	float temp = ;
-	float depth = zfar - znear;
+	float depth = zFar - zNear;
 
-	m[0]  = (2.0 * znear)/width;
+	m[0]  = (2.0 * zNear)/width;
 	m[1]  = 0;
 	m[2]  = 0;
 	m[3]  = 0;
 
 	m[4]  = 0;
-	m[5]  = (2.0 * znear)/height;
+	m[5]  = (2.0 * zNear)/height;
 	m[6]  = 0;
 	m[7]  = 0;
 
 	m[8]  = (xmax+xmin)/width;
 	m[9]  = (ymax+ymin)/height;
-	m[10] = (-zfar-znear)/depth;
+	m[10] = (-zFar-zNear)/depth;
 	m[11] = -1.0;
 
 	m[12] = 0;
 	m[13] = 0;
-	m[14] = (-(2.0 * znear)*zfar)/depth;
+	m[14] = (-(2.0 * zNear)*zFar)/depth;
 	m[15] = 0;
-
-	matrixMult(m);
 	 
 }
 
@@ -435,7 +439,6 @@ void Camera::Orthographic(float left, float right, float bottom, float top, floa
 	m[14] = -(far + near) * _1over_fmn;
 	m[15] = 1.0;
 
-	matrixMult(m);
 }
 
 void cross_product (float a [3], float b [3], float product [3])
@@ -457,40 +460,20 @@ void normalize (float v [3])
 	}
 }
 
-void matrixMult(float m[16]) {
-	//need to multiply m by the motionmatrix.
-}
 
 // Calculate the new viewing transform matrix
-void Camera::LookAt(float eyeX, float eyeY, float eyeZ,
-					float centerX, float centerY, float centerZ,
-					float upX, float upY, float upZ)
+void Camera::LookAt()
 {
-	float m [16];
-	float f [3];
-	float u [3];
-	float s [3];
-
-	f[0] = centerX - eyeX;
-	f[1] = centerY - eyeY;
-	f[2] = centerZ - eyeZ;
-
-	u[0] = upX;
-	u[1] = upY;
-	u[2] = upZ;
-
-	normalize(f);
-	cross_product(f, u, s);
-	normalize(s);
-	cross_product(s, f, u);
-
-	m[0] =  s[0]; m[4] =  s[1]; m[8] =   s[2]; m[12] = 0.0;
-	m[1] =  u[0]; m[5] =  u[1]; m[9] =   u[2]; m[13] = 0.0;
-	m[2] = -f[0]; m[6] = -f[1]; m[10] = -f[2]; m[14] = 0.0;
-	m[3] =   0.0; m[7] =   0.0; m[11] =   0.0; m[15] = 1.0;
-
-	matrixMult(m);
-	Object::WorldTranslate(-eyeX, -eyeY, -eyeZ);
+	ViewingMatrix[0] = u.i; ViewingMatrix[4] = u.j;
+	ViewingMatrix[8] = u.k;
+	ViewingMatrix[12] = -(u.i*Position.x + u.j*Position.y + u.k*Position.z);
+	ViewingMatrix[1] = v.i;
+	ViewingMatrix[5] = v.j;
+	ViewingMatrix[9] = v.k;
+	ViewingMatrix[13] = -(v.i*Position.x + v.j*Position.y + v.k*Position.z);
+	ViewingMatrix[2] = n.i; ViewingMatrix[6] = n.j; ViewingMatrix[10] = n.k;
+	ViewingMatrix[14] = -(n.i*Position.x + n.j*Position.y + n.k*Position.z);
+	ViewingMatrix[3] = ViewingMatrix[7] = ViewingMatrix[11] = 0; ViewingMatrix[15] = 1;
 
 }
 

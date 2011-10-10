@@ -30,7 +30,6 @@ int WindowWidth = 300, WindowHeight = 300;
 Scene* pDisplayScene;
 Camera* pDisplayCamera;
 
-
 void DisplayFunc()
 {
 	
@@ -51,16 +50,16 @@ void DisplayFunc()
 
 	
 	//MAY WANT TO MODIFY THIS BASED ON ASSIGNMENT REQUIREMENTS
-	gluOrtho2D(-1.1,1.1,-1.1,1.1);
+	gluOrtho2D(-1.0,1.0,-1.0,1.0);
 	
 
 	if(PerspectiveMode)
 	{
-		pDisplayCamera->Perspective();
+		pDisplayCamera->Perspective(100,5,3,10);
 	}
 		
 	else
-		pDisplayCamera->Orthographic();
+		pDisplayCamera->Orthographic(10,10,10,10,3,10);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -159,6 +158,11 @@ void DisplayFunc()
 			glVertex2f(temp3.x/temp3.h, temp3.y/temp3.h);
 			glEnd();
 			glLineWidth(1.0);
+			glBegin(GL_LINES);
+				glVertex3f(0,0,0);
+				glVertex3f(1,0,0);
+			glEnd();
+
 		}
 
 		if(ShowBoundingBoxes)
@@ -335,7 +339,7 @@ int main(int argc, char* argv[])
 {
 	pDisplayScene = new Scene;
 	//YOU MAY ENTER YOUR OWN SCENE FILE OR PASS IT AS AN ARGUMENT TO THE PROGRAM
-	pDisplayScene->Load("scene2.dat");
+	pDisplayScene->Load("scene1.dat");
 	pDisplayCamera = new Camera;
 	pDisplayCamera->ViewWidth = (float)WindowWidth/32;
 	pDisplayCamera->ViewHeight = (float)WindowHeight/32;
