@@ -55,11 +55,11 @@ void DisplayFunc()
 
 	if(PerspectiveMode)
 	{
-		pDisplayCamera->Perspective(100,5,3,10);
+		pDisplayCamera->Perspective();
 	}
 		
 	else
-		pDisplayCamera->Orthographic(10,10,10,10,3,10);
+		pDisplayCamera->Orthographic();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

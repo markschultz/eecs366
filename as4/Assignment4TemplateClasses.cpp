@@ -341,23 +341,9 @@ void Camera::EnforceVectors()
 	v.k = n.i*u.j - n.j*u.i;
 }
 
-// Calculate the new perspective projection matrix
+
 /*
-	fovy	  Specifies the	field of view angle, in	degrees, in
-		  the y	direction.
-
-	aspect  Specifies the aspect ratio that determines the field
-		  of view in the x direction. The aspect ratio is the
-		  ratio	of x (width) to	y (height).
-
-	zNear	  Specifies the	distance from the viewer to the	near
-		  clipping plane (always positive).
-
-	zFar	  Specifies the	distance from the viewer to the	far
-		  clipping plane (always positive).
-*/
-/*
-the m matrix is like this 
+the matrix is like this 
 + - - -  -  +
 | 0 4 8  12 |
 | 1 5 9  13 |
@@ -365,79 +351,52 @@ the m matrix is like this
 | 3 7 11 15 |
 + - - -  -  +
 */
-void Camera::Perspective(float fovyInDegrees, float aspect, float zNear, float zFar)
+void Camera::Perspective()
 {
-	float m[16];
-	float ymax = zNear * tan(fovyInDegrees * M_PI/360);
-	float ymin = -ymax;
-	float xmax = ymax * aspect;
-	float xmin = ymin * aspect;
+	ProjectionMatrix[0]  = 2*ViewPlane/ViewWidth;
+	ProjectionMatrix[1]  = 0.0;
+	ProjectionMatrix[2]  = 0.0;
+	ProjectionMatrix[3]  = 0.0;
 
-	float width = xmax - xmin;
-	float height = ymax - ymin;
-	float depth = zFar - zNear;
+	ProjectionMatrix[4]  = 0.0;
+	ProjectionMatrix[5]  = 2*ViewPlane/ViewHeight;
+	ProjectionMatrix[6]  = 0.0;
+	ProjectionMatrix[7]  = 0.0;
 
-	m[0]  = (2.0 * zNear)/width;
-	m[1]  = 0;
-	m[2]  = 0;
-	m[3]  = 0;
+	ProjectionMatrix[8]  = 0.0;
+	ProjectionMatrix[9]  = 0.0;
+	ProjectionMatrix[10] = FarPlane/(NearPlane - FarPlane);
+	ProjectionMatrix[11] = -1.0;
 
-	m[4]  = 0;
-	m[5]  = (2.0 * zNear)/height;
-	m[6]  = 0;
-	m[7]  = 0;
-
-	m[8]  = (xmax+xmin)/width;
-	m[9]  = (ymax+ymin)/height;
-	m[10] = (-zFar-zNear)/depth;
-	m[11] = -1.0;
-
-	m[12] = 0;
-	m[13] = 0;
-	m[14] = (-(2.0 * zNear)*zFar)/depth;
-	m[15] = 0;
+	ProjectionMatrix[12] = 0.0;
+	ProjectionMatrix[13] = 0.0;
+	ProjectionMatrix[14] = FarPlane*NearPlane/(NearPlane - FarPlane);
+	ProjectionMatrix[15] = 0.0;
 	 
 }
 
 // Calculate the new orthographic projection matrix
-void Camera::Orthographic(float left, float right, float bottom, float top, float near, float far)
+void Camera::Orthographic()
 {
-	float m[16];
-	float rml = right - left;
-	float fmn = far - near;
-	float tmb = top - bottom;
-	float _1over_rml;
-	float _1over_fmn;
-	float _1over_tmb;
+	ProjectionMatrix[0] = 2.0/ViewWidth;
+	ProjectionMatrix[1] = 0.0;
+	ProjectionMatrix[2] = 0.0;
+	ProjectionMatrix[3] = 0.0;
 
-	if (rml == 0.0 || fmn == 0.0 || tmb == 0.0) {
-		//error, invalid value. do something to designate error
-		return;
-	}
+	ProjectionMatrix[4] = 0.0;
+	ProjectionMatrix[5] = 2.0/ViewHeight;
+	ProjectionMatrix[6] = 0.0;
+	ProjectionMatrix[7] = 0.0;
 
-	_1over_rml = 1.0 / rml;
-	_1over_fmn = 1.0 / fmn;
-	_1over_tmb = 1.0 / tmb;
+	ProjectionMatrix[8] = 0.0;
+	ProjectionMatrix[9] = 0.0;
+	ProjectionMatrix[10] = NearPlane/(NearPlane - FarPlane);
+	ProjectionMatrix[11] = 0.0;
 
-	m[0] = 2.0 * _1over_rml;
-	m[1] = 0.0;
-	m[2] = 0.0;
-	m[3] = 0.0;
-
-	m[4] = 0.0;
-	m[5] = 2.0 * _1over_tmb;
-	m[6] = 0.0;
-	m[7] = 0.0;
-
-	m[8] = 0.0;
-	m[9] = 0.0;
-	m[10] = -2.0 * _1over_fmn;
-	m[11] = 0.0;
-
-	m[12] = -(right + left) *  _1over_rml;
-	m[13] = -(top + bottom) *  _1over_tmb;
-	m[14] = -(far + near) * _1over_fmn;
-	m[15] = 1.0;
+	ProjectionMatrix[12] = 0.0;
+	ProjectionMatrix[13] = 0.0;
+	ProjectionMatrix[14] = 0.0;
+	ProjectionMatrix[15] = 1.0;
 
 }
 

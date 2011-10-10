@@ -56,8 +56,8 @@ public:
 	void ScaleView(float s);
 	void MoveView(float d);
 	void EnforceVectors();
-	void Perspective(float fovyInDegrees, float aspect, float zNear, float zFar);
-	void Orthographic(float left, float right, float bottom, float top, float near, float far);
+	void Perspective();
+	void Orthographic();
 	void LookAt();
 	void LookAtMove(float,float,float);
 	Vertex Position;
