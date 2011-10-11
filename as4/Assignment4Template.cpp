@@ -113,9 +113,7 @@ void DisplayFunc()
 				temp	= Transform(pDisplayScene->pObjectList[i].ModelMatrix,input[k]);
 				temp2	= Transform(pDisplayCamera->ViewingMatrix,temp);
 				input[k]= Transform(pDisplayCamera->ProjectionMatrix,temp2);
-			}
-
-			
+			}		
 
 			glBegin(GL_POLYGON);
 			for(int k = 0; k < 3; k++)
@@ -158,15 +156,24 @@ void DisplayFunc()
 			glVertex2f(temp3.x/temp3.h, temp3.y/temp3.h);
 			glEnd();
 			glLineWidth(1.0);
-			glBegin(GL_LINES);
-				glVertex3f(0,0,0);
-				glVertex3f(1,0,0);
-			glEnd();
-
 		}
 
 		if(ShowBoundingBoxes)
 		{
+			glBegin(GL_QUADS);
+
+			input = new Vertex[8];
+			for(int i = 1; i < 9; i++){
+			temp = Transform(pDisplayScene->pObjectList[i-1].ModelMatrix, pDisplayScene->pObjectList->pBoundingBox[i-1]);
+			temp1= Transform(pDisplayCamera->ViewingMatrix,temp);
+			input[i-1] = Transform(pDisplayCamera->ProjectionMatrix,temp1);
+			}
+			glColor3f(1, 0, 0);
+
+			for(int j = 0; j< 4; j++)
+				glVertex2f(input[j].x, input[j].y);
+
+			glEnd();
 			//ADD YOUR CODE HERE: Draw the bounding boxes
 
 		} 
