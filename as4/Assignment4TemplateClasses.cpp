@@ -90,19 +90,17 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 			{
 				if(pVertexList[CurrentVertex].x < MinimumX)
 					MinimumX = pVertexList[CurrentVertex].x;
-				else if(pVertexList[CurrentVertex].x > MaximumX)
+				if(pVertexList[CurrentVertex].x > MaximumX)
 					MaximumX = pVertexList[CurrentVertex].x;
-				if(pVertexList[CurrentVertex].y < MinimumY)
+				if(pVertexList[CurrentVertex].y  < MinimumY)
 					MinimumY = pVertexList[CurrentVertex].y;
-				else if(pVertexList[CurrentVertex].y > MaximumY)
+				if(pVertexList[CurrentVertex].y  > MaximumY)
 					MaximumY = pVertexList[CurrentVertex].y;
 				if(pVertexList[CurrentVertex].z < MinimumZ)
 					MinimumZ = pVertexList[CurrentVertex].z;
-				else if(pVertexList[CurrentVertex].z > MaximumZ)
+				if(pVertexList[CurrentVertex].z > MaximumZ)
 					MaximumZ = pVertexList[CurrentVertex].z;
 			}
-			//ADD YOUR CODE HERE :Track maximum and minimum coordinates for use in bounding boxes
-
 			CurrentVertex++;
 		}
 		else if(DataType == 'f')
@@ -117,8 +115,8 @@ void Object::Load(char* file, float s, float rx, float ry, float rz,
 
 	pBoundingBox[0].x = MinimumX; pBoundingBox[0].y = MinimumY; pBoundingBox[0].z = MinimumZ;
 	pBoundingBox[1].x = MaximumX; pBoundingBox[1].y = MinimumY; pBoundingBox[1].z = MinimumZ;
-	pBoundingBox[2].x = MinimumX; pBoundingBox[2].y = MaximumY; pBoundingBox[2].z = MinimumZ;
-	pBoundingBox[3].x = MaximumX; pBoundingBox[3].y = MaximumY; pBoundingBox[3].z = MinimumZ;
+	pBoundingBox[2].x = MaximumX; pBoundingBox[2].y = MaximumY; pBoundingBox[2].z = MinimumZ;
+	pBoundingBox[3].x = MinimumX; pBoundingBox[3].y = MaximumY; pBoundingBox[3].z = MinimumZ;
 	pBoundingBox[4].x = MinimumX; pBoundingBox[4].y = MinimumY; pBoundingBox[4].z = MaximumZ;
 	pBoundingBox[5].x = MaximumX; pBoundingBox[5].y = MinimumY; pBoundingBox[5].z = MaximumZ;
 	pBoundingBox[6].x = MinimumX; pBoundingBox[6].y = MaximumY; pBoundingBox[6].z = MaximumZ;

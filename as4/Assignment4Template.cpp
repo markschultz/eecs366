@@ -23,7 +23,7 @@ bool PerspectiveMode = true;
 bool ShowAxes = true;
 bool SelectionMode = false;
 int SelectedObject = 0;
-bool ShowBoundingBoxes = true;
+bool ShowBoundingBoxes = false;
 int WindowWidth = 300, WindowHeight = 300;
 
 // Scene Content Variables
@@ -160,20 +160,30 @@ void DisplayFunc()
 
 		if(ShowBoundingBoxes)
 		{
-			glBegin(GL_QUADS);
+			
 
 			input = new Vertex[8];
-			for(int i = 1; i < 9; i++){
-			temp = Transform(pDisplayScene->pObjectList[i-1].ModelMatrix, pDisplayScene->pObjectList->pBoundingBox[i-1]);
+			for(int i = 0; i < 8; i++){
+			temp = Transform(pDisplayScene->pObjectList[i].ModelMatrix, pDisplayScene->pObjectList->pBoundingBox[i]);
 			temp1= Transform(pDisplayCamera->ViewingMatrix,temp);
-			input[i-1] = Transform(pDisplayCamera->ProjectionMatrix,temp1);
+			input[i] = Transform(pDisplayCamera->ProjectionMatrix,temp1);
 			}
 			glColor3f(1, 0, 0);
-
+			glBegin(GL_QUADS);
 			for(int j = 0; j< 4; j++)
-				glVertex2f(input[j].x, input[j].y);
+				glVertex2f(input[j].x/input[j].h, input[j].y/input[j].h);
+			for(int k = 2; k <6 ; k++)
+				glVertex2f(input[k].x/input[k].h, input[k].y/input[k].h);
+			for(int d = 4; d < 8; d++)
+				glVertex2f(input[d].x/input[d].h, input[d].y/input[d].h);
 
+			glVertex2f(input[6].x/input[6].h, input[6].y/input[6].h);
+			glVertex2f(input[7].x/input[7].h, input[7].y/input[7].h);
+			glVertex2f(input[1].x/input[1].h, input[1].y/input[1].h);
+			glVertex2f(input[0].x/input[0].h, input[0].y/input[0].h);
 			glEnd();
+			glLineWidth(1.0);
+			
 			//ADD YOUR CODE HERE: Draw the bounding boxes
 
 		} 
