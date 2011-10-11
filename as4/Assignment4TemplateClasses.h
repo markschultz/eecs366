@@ -72,3 +72,5 @@ public:
 };
 
 Vertex Transform(float* matrix, Vertex& point);
+
+int Select(int,float, float, Scene*, Camera*);

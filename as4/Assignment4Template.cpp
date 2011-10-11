@@ -214,8 +214,7 @@ void MouseFunc(int button,int state,int x,int y)
 	if(MouseLeft && SelectionMode)
 	{
 		// Select a new object with (x,y) 
-		//ADD YOUR CODE HERE: Select a new object by intersecting the selection ray
-
+		SelectedObject = Select(SelectedObject,(float)x/WindowWidth, 1.0 - (float)y/WindowHeight, pDisplayScene, pDisplayCamera);
 		glutPostRedisplay();
 	}
 }
@@ -225,7 +224,6 @@ void MotionFunc(int x, int y)
 	if(MouseLeft && !SelectionMode)
 		pDisplayCamera->Pan(((float) x - MouseX)/128, ((float) y - MouseY)/128);
 
-	
 	MouseX = x;
 	MouseY = y;
 

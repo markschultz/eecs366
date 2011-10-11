@@ -369,7 +369,6 @@ void Camera::EnforceVectors()
 	v.k = n.i*u.j - n.j*u.i;
 }
 
-
 /*
 the matrix is like this 
 + - - -  -  +
@@ -447,7 +446,6 @@ void normalize (float v [3])
 	}
 }
 
-
 // Calculate the new viewing transform matrix
 void Camera::LookAt()
 {
@@ -474,6 +472,54 @@ Vertex Transform(float* matrix, Vertex& point)
 	temp.h = matrix[3]*point.x + matrix[7]*point.y + matrix[11]*point.z + matrix[15]*point.h;
 	return temp;
 
+}
+
+int Select(int previousSelection, float x, float y, Scene* pScene, Camera* pCamera)
+{
+	int nextSelect = previousSelection;
+	float zp = 10000;
+	float s, t, z;
+	Vertex temp1, temp2, temp3;
+
+	for(int i = 0; i < pScene->ObjectCount; i++)
+	{
+		for(int j = 0; j < 8; j++) //cube always has 8 sides
+		{
+			
+			temp1 = pScene->pObjectList->pBoundingBox[j];
+			temp1 = Transform(pScene->pObjectList[i].ModelMatrix, temp1);
+			temp1 = Transform(pCamera->ViewingMatrix, temp1);
+			temp1 = Transform(pCamera->ProjectionMatrix, temp1);
+			temp2 = pScene->pObjectList->pBoundingBox[(j+1)%8];
+			temp2 = Transform(pScene->pObjectList[i].ModelMatrix, temp2);
+			temp2 = Transform(pCamera->ViewingMatrix, temp2);
+			temp2 = Transform(pCamera->ProjectionMatrix, temp2);
+			temp2 = pScene->pObjectList->pBoundingBox[(j+2)%8];
+			temp3 = Transform(pScene->pObjectList[i].ModelMatrix, temp3);
+			temp3 = Transform(pCamera->ViewingMatrix, temp3);
+			temp3 = Transform(pCamera->ProjectionMatrix, temp3);
+			temp1.Normalize();
+			temp2.Normalize();
+			temp3.Normalize();
+			t = ((temp1.x - temp3.x)*(y - temp3.y) - (temp1.y - temp3.y)*(x - temp3.x))/((temp1.x - temp3.x)*(temp2.y - temp3.y) + (temp1.y - temp3.y)*(temp3.x - temp2.x));
+			if((temp1.x - temp3.x) != 0)
+			{
+				s = (x - temp3.x + (temp3.x - temp2.x)*t)/(temp1.x - temp3.x);
+			} else {
+				s = (y - temp3.y+(temp3.y - temp2.y)*t)/(temp1.y - temp3.y);
+			}
+			if((s >= 0) && (t >= 0) && ((s + t) <= 1))
+			{
+				z = temp1.z*s + temp2.z*t + (1 - s - t)*temp3.z;
+				if(z < zp)
+				{
+					zp = z;
+					nextSelect = i;
+				}
+			}
+		}
+	}
+	return nextSelect;
 }
 
 
