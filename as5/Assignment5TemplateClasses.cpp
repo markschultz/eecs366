@@ -6,6 +6,7 @@
 #include "Assignment5TemplateClasses.h"
 
 using namespace std;
+typedef enum {Left, Right, Top, Bottom, Front, Back} Boundry;
 
 Vertex::Vertex()
 {
@@ -481,18 +482,14 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 // ADD CODE HERE: dummy function only copies polygons
 Vertex* ClipPolygon(Vertex* input)
 {
-	if(input.x/input.h > 1)
-		input.x = 1;
-	else if (input.x/input.h < -1)
-		input.x = -1;
-	if(input.y/input.h > 1)
-		input.y = 1;
-	else if (input.y/input.h < -1)
-		input.y = -1;
-	if(input.z/input.h > 1)
-		input.z = 1;
-	else if (input.z/input.h < -1)
-		input.z = -1;
-
 	return input;
+}
+
+Vertex* intersect (Vertex* Pt1, Vertex* Pt2, Boundry Edge)
+{
+	double m;
+
+
+
+
 }
