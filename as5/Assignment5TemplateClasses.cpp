@@ -487,9 +487,40 @@ Vertex* ClipPolygon(Vertex* input)
 
 Vertex* intersect (Vertex* Pt1, Vertex* Pt2, Boundry Edge)
 {
-	double m;
+	Vertex Point;
 
-
-
+	switch(Edge) {
+	case Front:
+		Point.x = Pt1.x((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.x((-1 - Pt1.z)/(Pt2.z - Pt1.z));
+		Point.y = Pt1.y((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.y((-1 - Pt1.z)/(Pt2.z - Pt1.z));
+		Point.z = -1;
+		break;
+	case Back:
+		Point.x = Pt1.x((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.x((1 - Pt1.z)/(Pt2.z - Pt1.z));
+		Point.y = Pt1.y((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.y((1 - Pt1.z)/(Pt2.z - Pt1.z));
+		Point.z = 1;
+		break;
+	case Right:
+		Point.z = Pt1.z((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.z((1 - Pt1.x)/(Pt2.x - Pt1.x));
+		Point.y = Pt1.y((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.y((1 - Pt1.x)/(Pt2.x - Pt1.x));
+		Point.x = 1;
+		break;
+	case Left:
+		Point.z = Pt1.z((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.z((1 - Pt1.x)/(Pt2.x - Pt1.x));
+		Point.y = Pt1.y((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.y((1 - Pt1.x)/(Pt2.x - Pt1.x));
+		Point.x = -1;
+		break;
+	case Top:
+		Point.z = Pt1.z((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.z((1 - Pt1.y)/(Pt2.y - Pt1.y));
+		Point.x = Pt1.x((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.x((1 - Pt1.y)/(Pt2.y - Pt1.y));
+		Point.y = 1;
+		break;
+	case Bottom:
+		Point.z = Pt1.z((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.z((1 - Pt1.y)/(Pt2.y - Pt1.y));
+		Point.x = Pt1.x((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.x((1 - Pt1.y)/(Pt2.y - Pt1.y));
+		Point.y = 1;
+		break;
+	}
+	return Point;
 
 }
