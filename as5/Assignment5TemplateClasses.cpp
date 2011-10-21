@@ -479,11 +479,20 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 
 // Clip a polygon against view volume borders
 // ADD CODE HERE: dummy function only copies polygons
-Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
+Vertex* ClipPolygon(Vertex* input)
 {
-    Vertex* output = new Vertex[count];
-    for(int i = 0; i < count; i++)
-        output[i] = input[i];
-    *out_count = count;
-    return output;
+	if(input.x/input.h > 1)
+		input.x = 1;
+	else if (input.x/input.h < -1)
+		input.x = -1;
+	if(input.y/input.h > 1)
+		input.y = 1;
+	else if (input.y/input.h < -1)
+		input.y = -1;
+	if(input.z/input.h > 1)
+		input.z = 1;
+	else if (input.z/input.h < -1)
+		input.z = -1;
+
+	return input;
 }
