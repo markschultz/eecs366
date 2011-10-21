@@ -482,16 +482,26 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 // ADD CODE HERE: dummy function only copies polygons
 Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 {
+	Vertex* output;
 	//first normalize everything. now everything is x/h,y/h,z/h. so if it was already normalized then we just divided by 1.
 	for(int i = 0; i < count; i++){
 		input[i].Normalize();
-		if((input[i].x<=abs(input[i].h)) && (input[i].y<=abs(input[i].h)) && (input[i].z<=abs(input[i].h)))
+		//first check if everything is inside
+		if((input[i].x>=abs(input[i].h)) && (input[i].y>=abs(input[i].h)) && (input[i].z>=abs(input[i].h)) && 
+		   (input[i].x<=-abs(input[i].h)) && (input[i].y<=-abs(input[i].h)) && (input[i].z<=-abs(input[i].h)))
 		{
-			input[i] = input[i];
+			*out_count = count;
+			return input;
+		//check for all outside
+		} else if(!(input[i].x>=abs(input[i].h)) && !(input[i].y>=abs(input[i].h)) && !(input[i].z>=abs(input[i].h)) && 
+				  (!input[i].x<=-abs(input[i].h)) && !(input[i].y<=-abs(input[i].h)) && !(input[i].z<=-abs(input[i].h)))
+		{
+			*out_count = 0;
+			return output;
 		}
 	}
 
-	Vertex* output = new Vertex[count];	
+	output = new Vertex[count];	
 	for(int i = 0; i < count; i++)
 		output[i] = input[i];
 	*out_count = count;
