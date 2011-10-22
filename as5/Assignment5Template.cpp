@@ -16,6 +16,8 @@ using namespace std;
 // User Interface Variables
 int MouseX = 0;
 int MouseY = 0;
+int MouseYpre = 0;
+int MouseXpre= 0;
 bool MouseLeft = false;
 bool MouseMiddle = false;
 bool MouseRight = false;
@@ -204,6 +206,7 @@ void MouseFunc(int button,int state,int x,int y)
 
 void MotionFunc(int x, int y)
 {
+
     if(MouseLeft && !SelectionMode)
         pDisplayCamera->Pan(((float) x - MouseX)/128, ((float) y - MouseY)/128);
     if(MouseMiddle && !SelectionMode)
@@ -212,19 +215,33 @@ void MotionFunc(int x, int y)
         pDisplayCamera->Move(0, 0, ((float) y - MouseY)/32);
 
     if(MouseMiddle && SelectionMode)
-    {
-        // Move the Near Plane
-        // ADD CODE HERE
-    }
+    {	
+
+	if(MouseYpre < MouseY){  
+		if(pDisplayCamera->FarPlane - pDisplayCamera->NearPlane >= 4)
+			pDisplayCamera->NearPlane += 1;	
+	}
+	if(MouseYpre > MouseY){  
+		if(pDisplayCamera->FarPlane - pDisplayCamera->NearPlane <= 12)
+			pDisplayCamera->NearPlane -= 1;	
+	}
+	}
     if(MouseRight && SelectionMode)
     {
-        // Move the Far Plane
-        // ADD CODE HERE
-    }
+      if(MouseXpre > MouseX){  
+		if(pDisplayCamera->FarPlane - pDisplayCamera->NearPlane <= 12)
+			pDisplayCamera->FarPlane -= 1;	
+	}
+	  	if(MouseXpre < MouseX){  
+		if(pDisplayCamera->FarPlane - pDisplayCamera->NearPlane <= 4)
+			pDisplayCamera->FarPlane += 1;	
+	}
+	}
+
     
     MouseX = x;
     MouseY = y;
-
+	MouseYpre = MouseY;
     glutPostRedisplay();
 }
 
@@ -252,6 +269,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
         pDisplayScene->pObjectList[SelectedObject].LocalRotate(0, 0, M_PI/32);
         break;
     case 'M':
+		break;
     case 'm':
         pDisplayScene->pObjectList[SelectedObject].LocalRotate(0, 0, -M_PI/32);
         break;

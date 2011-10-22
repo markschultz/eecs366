@@ -537,12 +537,12 @@ Vertex intersect (Vertex Pt1, Vertex Pt2, int edge)
 	Vertex Point;
 
 	switch(edge) {
-	case 5://back
+	case 4://back
 		Point.x = Pt1.x*((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.x*((-1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.y = Pt1.y*((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.y*((-1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.z = -1;
 		break;
-	case 4://front
+	case 5://front
 		Point.x = Pt1.x*((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.x*((1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.y = Pt1.y*((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.y*((1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.z = 1;
