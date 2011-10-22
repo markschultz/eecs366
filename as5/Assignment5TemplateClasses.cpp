@@ -6,7 +6,6 @@
 #include "Assignment5TemplateClasses.h"
 
 using namespace std;
-typedef enum {Left, Right, Top, Bottom, Front, Back} Boundry;
 
 Vertex::Vertex()
 {
@@ -483,63 +482,87 @@ int Select(int previous, Scene* pScene, Camera* pCamera, float x, float y)
 Vertex* ClipPolygon(int count, Vertex* input, int* out_count)
 {
 	Vertex* output;
+	int good[10];
+	int goodnum[10];
+	int countgood = 0;
 	//first normalize everything. now everything is x/h,y/h,z/h. so if it was already normalized then we just divided by 1.
 	for(int i = 0; i < count; i++){
 		input[i].Normalize();
-		//first check if everything is inside
-		if((input[i].x>=abs(input[i].h)) && (input[i].y>=abs(input[i].h)) && (input[i].z>=abs(input[i].h)) && 
-		   (input[i].x<=-abs(input[i].h)) && (input[i].y<=-abs(input[i].h)) && (input[i].z<=-abs(input[i].h)))
+		//check for inside
+		if((input[i].x<=abs(input[i].h)) && (input[i].y<=abs(input[i].h)) && (input[i].z<=abs(input[i].h)) && 
+		   (input[i].x>=-abs(input[i].h)) && (input[i].y>=-abs(input[i].h)) && (input[i].z>=-abs(input[i].h)))
 		{
-			*out_count = count;
-			return input;
-		//check for all outside
-		} else if(!(input[i].x>=abs(input[i].h)) && !(input[i].y>=abs(input[i].h)) && !(input[i].z>=abs(input[i].h)) && 
-				  (!input[i].x<=-abs(input[i].h)) && !(input[i].y<=-abs(input[i].h)) && !(input[i].z<=-abs(input[i].h)))
-		{
-			*out_count = 0;
-			return output;
-		}
+			good[countgood] = i;
+			goodnum[i] = 1;
+			countgood++;
+		} else { goodnum[i] = 0; }
+	}
+	if(countgood == count){//return everything
+		*out_count = count;
+		return input;
+	}
+	if(countgood == 0){//return nothing
+		*out_count = 0;
+		return output;
 	}
 
-	output = new Vertex[count];	
-	for(int i = 0; i < count; i++)
-		output[i] = input[i];
-	*out_count = count;
+	for(int i = 0; i < countgood; i++) {
+		if(good[i] >= 0) { output[i] = input[good[i]];}//if its a good one, load it in the output array
+	}
+
+	for(int i = 0; i < count; i++) {
+		if((goodnum[i] == 1) && (goodnum[(i+1)%3] == 0)){
+			countgood++;
+			if(abs(input[i].h) + input[i].x < 0)//left
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],0);//left
+			else if(abs(input[i].h) - input[i].x < 0)//right
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],1);//right
+			else if(abs(input[i].h) + input[i].y < 0)//bottom
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],3);//bottom
+			else if(abs(input[i].h) - input[i].y < 0)//top
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],2);//top
+			else if(abs(input[i].h) + input[i].z < 0)//near
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],4);//near
+			else if(abs(input[i].h) - input[i].z < 0)//far
+				output[countgood]=intersect(input[goodnum[i]],input[goodnum[(i+1)%3]],5);//far
+		}
+	}
+	*out_count = countgood;
 	return output;
 }
 
 //pt1 is inside, pt2 is outside, edge is intersecting edge
-Vertex intersect (Vertex Pt1, Vertex Pt2, Boundry Edge)
+Vertex intersect (Vertex Pt1, Vertex Pt2, int edge)
 {
 	Vertex Point;
 
-	switch(Edge) {
-	case Front:
+	switch(edge) {
+	case 5://back
 		Point.x = Pt1.x*((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.x*((-1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.y = Pt1.y*((Pt2.z - -1)/(Pt2.z - Pt1.z)) + Pt2.y*((-1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.z = -1;
 		break;
-	case Back:
+	case 4://front
 		Point.x = Pt1.x*((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.x*((1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.y = Pt1.y*((Pt2.z - 1)/(Pt2.z - Pt1.z)) + Pt2.y*((1 - Pt1.z)/(Pt2.z - Pt1.z));
 		Point.z = 1;
 		break;
-	case Right:
+	case 1://right
 		Point.z = Pt1.z*((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.z*((1 - Pt1.x)/(Pt2.x - Pt1.x));
 		Point.y = Pt1.y*((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.y*((1 - Pt1.x)/(Pt2.x - Pt1.x));
 		Point.x = 1;
 		break;
-	case Left:
+	case 0://left
 		Point.z = Pt1.z*((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.z*((1 - Pt1.x)/(Pt2.x - Pt1.x));
 		Point.y = Pt1.y*((Pt2.x - 1)/(Pt2.x - Pt1.x)) + Pt2.y*((1 - Pt1.x)/(Pt2.x - Pt1.x));
 		Point.x = -1;
 		break;
-	case Top:
+	case 2://top
 		Point.z = Pt1.z*((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.z*((1 - Pt1.y)/(Pt2.y - Pt1.y));
 		Point.x = Pt1.x*((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.x*((1 - Pt1.y)/(Pt2.y - Pt1.y));
 		Point.y = 1;
 		break;
-	case Bottom:
+	case 3://bottom
 		Point.z = Pt1.z*((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.z*((1 - Pt1.y)/(Pt2.y - Pt1.y));
 		Point.x = Pt1.x*((Pt2.y - 1)/(Pt2.y - Pt1.y)) + Pt2.x*((1 - Pt1.y)/(Pt2.y - Pt1.y));
 		Point.y = 1;
