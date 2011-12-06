@@ -2,6 +2,8 @@
 uniform vec3 AmbientContribution,DiffuseContribution,SpecularContribution;
 uniform float exponent;
 
+uniform sampler2D textureID;
+
 attribute float tang;
 
 varying vec3 vNormal, vLight, vView, vHalfway;
@@ -14,6 +16,9 @@ varying vec3 vNormal, vLight, vView, vHalfway;
 
 void main(void)
 {
+   //
+   gl_TexCoord[0] = gl_MultiTexCoord0;
+
    // Transform vertex position to view space
    
    vec3 pos = vec3( gl_ModelViewMatrix * gl_Vertex );

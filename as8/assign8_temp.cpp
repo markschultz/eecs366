@@ -297,13 +297,14 @@ Setting the shader files
 Setting the shader variables
 *************************************************************/
 
-void error_exit(int status, char *text)
+void error_exit(int status, char *text, char *name)
 {
 
 	// Print error message
 
 	fprintf(stderr,"Internal Error %i: ", status);
 	fprintf(stderr,text);
+	fprintf(stderr,name);
 	printf("\nTerminating as Result of Internal Error.\nPress Enter to exit.\n");
 
 	// Keep the terminal open
@@ -323,8 +324,10 @@ int PrintOGLError(char *file, int line)
 	glErr = glGetError();
 	while (glErr != GL_NO_ERROR)
 	{
-		printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
-		retCode = 1;
+		if(!(glErr==1281)){
+			printf("glError in file %s @ line %d: %s,%d\n", file, line, gluErrorString(glErr),glErr);
+			retCode = 1;
+		}
 		glErr = glGetError();
 	}
 	return retCode;
@@ -412,7 +415,7 @@ int getUniformVariable(GLuint program,char *name)
 	
 	if (location == -1)
 	{
-		error_exit(1007, "No such uniform variable");
+		error_exit(1007, "No such uniform variable: ", name);
 	}
 	PrintOpenGLError();
 	return location;
@@ -436,10 +439,13 @@ void setParameters(GLuint program)
 	int light_loc;
 	int ambient_loc,diffuse_loc,specular_loc;
 	int exponent_loc;
+	GLint tex_loc;
+	tex_loc = getUniformVariable(program, "textureID");
+	glUniform1iARB(tex_loc,0);
 
 	//sample variable used to demonstrate how attributes are used in vertex shaders.
 	//can be defined as gloabal and can change per vertex
-	float tangent = 0.0;
+	float tangent = 0.1;
 	float tangent_loc;
 
 	update_Light_Position();

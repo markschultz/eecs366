@@ -48,4 +48,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sampleshader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="sampleshader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shader.vert">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 
 uniform vec3 AmbientContribution,DiffuseContribution,SpecularContribution;
 uniform float exponent;
+uniform sampler2D textureID;
 varying vec3 vNormal, vLight, vView, vHalfway;
 
 vec3 AmbientComponent(void)
@@ -36,6 +37,7 @@ void main(void)
                 SpecularComponent();  
    // Final color
    
-   
+   vec4 color2 = texture2D(textureID, gl_TexCoord[0].st);
    gl_FragColor = vec4(color, 1.0);
+   gl_FragColor += color2;  
 }
