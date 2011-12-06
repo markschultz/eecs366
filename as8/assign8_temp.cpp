@@ -18,7 +18,7 @@ Spring 2006
 #include <GL/gl.h>
 
 #include "glprocs.h"
-# include "assign8_temp.h"
+#include "assign8_temp.h"
 #include "read_tga.h"
 
 #define PI 3.14159265359
@@ -91,7 +91,7 @@ void DisplayFunc(void)
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	//	setParameters(program);
+	setParameters(program);
 
 	// Load image from tga file
 	TGA *TGAImage	= new TGA("./sphericalenvironmentmap/house2.tga");
@@ -106,7 +106,6 @@ void DisplayFunc(void)
 	glGenTextures(1, &id);
 
 	glBindTexture(GL_TEXTURE_2D, id);
-
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
@@ -157,7 +156,7 @@ void DisplayFunc(void)
 	}	
 
 	//glutSolidTeapot(1);
-//	setParameters(program);
+	setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -167,7 +166,6 @@ void ReshapeFunc(int x,int y)
 	WindowWidth = x;
 	WindowHeight = y;
 }
-
 
 void MouseFunc(int button,int state,int x,int y)
 {
@@ -203,10 +201,6 @@ void MotionFunc(int x, int y)
 
 	glutPostRedisplay();
 }
-
-
-
-
 
 //Motion and camera controls
 void KeyboardFunc(unsigned char key, int x, int y)
@@ -277,7 +271,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Assignment 6");
+	glutCreateWindow("Assignment 8");
 
 
 
@@ -288,7 +282,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(KeyboardFunc);
 
 	
-	//setShaders();
+	setShaders();
 	
 	meshReader("teapot.obj", 1);
 
@@ -335,7 +329,6 @@ int PrintOGLError(char *file, int line)
 	}
 	return retCode;
 }
-
 
 void setShaders() 
 {
@@ -406,7 +399,7 @@ void setShaders()
 	glUseProgramObjectARB(p);
 
 		
-//	setParameters(p);
+	setParameters(p);
 
 }
 
