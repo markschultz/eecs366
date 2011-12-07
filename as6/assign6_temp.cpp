@@ -18,8 +18,10 @@ Jon Nicholl
 #include <GL/glu.h>
 #include <GL/gl.h>
 #include "glprocs.h"
+#define ON 1
+#define OFF 0
 
-
+int Light = ON;
 #define PI 3.14159265359
 
 using namespace std;
@@ -30,6 +32,10 @@ GLuint vertex_shader,fragment_shader,p;
 int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
+double R = 1.0;
+double B = 1.0;
+double G = 1.0;
+int c = 0;
 
 
 //Projection, camera contral related declerations
@@ -53,9 +59,41 @@ void DisplayFunc(void) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
+
 	//load projection and viewing transforms
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+
+	GLfloat Color[ ] = {R,G,B, 1.0};
+	GLfloat blackColor[ ] = {0.0 , 0.0 , 0.0, 1.0};
+	GLfloat light3PosType [ ] = {7.0, 7.0, 7.0};
+	GLfloat light1PosType [ ] = {CameraRadius*cos(CameraTheta)*sin(CameraPhi),
+			  CameraRadius*sin(CameraTheta)*sin(CameraPhi),
+			  CameraRadius*cos(CameraPhi)};
+	GLfloat light1Direct [] = {CameraRadius*cos(CameraTheta)*sin(CameraPhi),
+			  CameraRadius*sin(CameraTheta)*sin(CameraPhi),
+			  CameraRadius*cos(CameraPhi)};
+	glLightfv(GL_LIGHT3, GL_POSITION, light3PosType);
+	glLightfv(GL_LIGHT1, GL_POSITION, light1PosType);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light1Direct);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 30.0);
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.5);
+	glLightfv(GL_LIGHT3, GL_COLOR, Color);
+	glLightfv(GL_LIGHT3, GL_AMBIENT, blackColor);
+
+	if(Light)
+	{
+		glEnable (GL_LIGHT3);
+	    glDisable(GL_LIGHT1);
+	}
+	if(!Light)
+	{
+			glEnable(GL_LIGHT1);
+		    glDisable(GL_LIGHT3);
+	}
+
 
 		
 	gluPerspective(60,(GLdouble) WindowWidth/WindowHeight,0.01,10000);
@@ -69,7 +107,9 @@ void DisplayFunc(void) {
 			  0,0,1);
 	glEnable(GL_DEPTH_TEST);
 	glutSolidTeapot(1);
+
 	glutSwapBuffers();
+
 }
 
 void ReshapeFunc(int x,int y)
@@ -208,6 +248,11 @@ void KeyboardFunc(unsigned char key, int x, int y)
 		}
 		break;
 	case 'd':
+		if(Light)
+			Light = OFF;
+		if(!Light)
+			Light = ON;
+		break;
 	case 'D':
 		if (lightSource == 0)
 		{
@@ -222,6 +267,35 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 'F':
 		if (lightSource == 1)
 		{
+			if( c = 0)
+				{
+					R = 1.0;
+					G = 0.0;
+					B = 0.0;
+					c++;
+			}
+			else if( c = 1)
+				{
+					R = 0.0;
+					G = 1.0;
+					B = 0.0;
+					c++;
+			}
+			else if( c = 2)
+				{
+					R = 0.0;
+					G = 0.0;
+					B = 1.0;
+					c++;
+			}
+			else if( c = 3)
+				{
+					R = 1.0;
+					G = 1.0;
+					B = 1.0;
+					c = 0;
+			}
+
 			//change color of the secondary light source at each key press, 
 			//light color cycling through pure red, green, blue, and white.
 		}
@@ -236,7 +310,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 
 int main(int argc, char **argv) 
 {			  
-
+	glEnable (GL_LIGHTING);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
@@ -251,7 +325,13 @@ int main(int argc, char **argv)
 	glutMotionFunc(MotionFunc);
 	glutKeyboardFunc(KeyboardFunc);
 
-
+	const GLubyte *temp;
+	temp=glGetString(GL_VERSION);
+	printf("%s\n",temp);
+	temp=glGetString(GL_VENDOR);
+	printf("%s\n",temp);
+	temp=glGetString(GL_EXTENSIONS);
+	printf("%s\n",temp);
 
 	
 

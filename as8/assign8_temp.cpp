@@ -91,7 +91,7 @@ void DisplayFunc(void)
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	//	setParameters(program);
+	//setParameter(program);
 
 	// Load image from tga file
 	TGA *TGAImage	= new TGA("./sphericalenvironmentmap/house2.tga");
@@ -157,7 +157,7 @@ void DisplayFunc(void)
 	}	
 
 	//glutSolidTeapot(1);
-//	setParameters(program);
+	//setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -287,8 +287,8 @@ int main(int argc, char **argv)
 	glutMotionFunc(MotionFunc);
 	glutKeyboardFunc(KeyboardFunc);
 
-	
-	//setShaders();
+	if(shadingMode = 1){
+		setShaders();}
 	
 	meshReader("teapot.obj", 1);
 
@@ -451,7 +451,7 @@ void setParameters(GLuint program)
 
 	update_Light_Position();
 
-	//Access uniform variables in shaders
+	//Access uniform variables in shader  
 	ambient_loc = getUniformVariable(program, "AmbientContribution");	
 	glUniform3fvARB(ambient_loc,1, ambient_cont);
 
