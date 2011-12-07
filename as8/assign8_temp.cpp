@@ -18,7 +18,7 @@ Spring 2006
 #include <GL/gl.h>
 
 #include "glprocs.h"
-# include "assign8_temp.h"
+#include "assign8_temp.h"
 #include "read_tga.h"
 
 #define PI 3.14159265359
@@ -91,7 +91,7 @@ void DisplayFunc(void)
 	glEnable(GL_DEPTH_TEST);	
 	glEnable(GL_TEXTURE_2D);
 
-	//setParameter(program);
+	setParameters(program);
 
 	// Load image from tga file
 	TGA *TGAImage	= new TGA("./sphericalenvironmentmap/house2.tga");
@@ -106,7 +106,6 @@ void DisplayFunc(void)
 	glGenTextures(1, &id);
 
 	glBindTexture(GL_TEXTURE_2D, id);
-
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 
@@ -157,7 +156,7 @@ void DisplayFunc(void)
 	}	
 
 	//glutSolidTeapot(1);
-	//setParameters(program);
+	setParameters(program);
 	glutSwapBuffers();
 }
 
@@ -167,7 +166,6 @@ void ReshapeFunc(int x,int y)
 	WindowWidth = x;
 	WindowHeight = y;
 }
-
 
 void MouseFunc(int button,int state,int x,int y)
 {
@@ -203,10 +201,6 @@ void MotionFunc(int x, int y)
 
 	glutPostRedisplay();
 }
-
-
-
-
 
 //Motion and camera controls
 void KeyboardFunc(unsigned char key, int x, int y)
@@ -277,7 +271,7 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Assignment 6");
+	glutCreateWindow("Assignment 8");
 
 
 
@@ -289,6 +283,8 @@ int main(int argc, char **argv)
 
 	if(shadingMode = 1){
 		setShaders();}
+	
+	setShaders();
 	
 	meshReader("teapot.obj", 1);
 
@@ -303,13 +299,14 @@ Setting the shader files
 Setting the shader variables
 *************************************************************/
 
-void error_exit(int status, char *text)
+void error_exit(int status, char *text, char *name)
 {
 
 	// Print error message
 
 	fprintf(stderr,"Internal Error %i: ", status);
 	fprintf(stderr,text);
+	fprintf(stderr,name);
 	printf("\nTerminating as Result of Internal Error.\nPress Enter to exit.\n");
 
 	// Keep the terminal open
@@ -329,13 +326,14 @@ int PrintOGLError(char *file, int line)
 	glErr = glGetError();
 	while (glErr != GL_NO_ERROR)
 	{
-		printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
-		retCode = 1;
+		if(!(glErr==1281)){
+			printf("glError in file %s @ line %d: %s,%d\n", file, line, gluErrorString(glErr),glErr);
+			retCode = 1;
+		}
 		glErr = glGetError();
 	}
 	return retCode;
 }
-
 
 void setShaders() 
 {
@@ -348,8 +346,8 @@ void setShaders()
 	
 
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs = shaderFileRead("sampleshader.vert");
-	fs = shaderFileRead("sampleshader.frag");
+	vs = shaderFileRead("shader.vert");
+	fs = shaderFileRead("shader.frag");
 
 	const char * vv = vs;
 	const char * ff = fs;
@@ -406,7 +404,7 @@ void setShaders()
 	glUseProgramObjectARB(p);
 
 		
-//	setParameters(p);
+	setParameters(p);
 
 }
 
@@ -419,7 +417,7 @@ int getUniformVariable(GLuint program,char *name)
 	
 	if (location == -1)
 	{
-		error_exit(1007, "No such uniform variable");
+		error_exit(1007, "No such uniform variable: ", name);
 	}
 	PrintOpenGLError();
 	return location;
@@ -443,30 +441,39 @@ void setParameters(GLuint program)
 	int light_loc;
 	int ambient_loc,diffuse_loc,specular_loc;
 	int exponent_loc;
+	/*GLint tex_loc;
+	tex_loc = getUniformVariable(program, "textureID");
+	glUniform1iARB(tex_loc,0)*/;
 
 	//sample variable used to demonstrate how attributes are used in vertex shaders.
 	//can be defined as gloabal and can change per vertex
-	float tangent = 0.0;
-	float tangent_loc;
+	/*float tangent = 0.1;
+	float tangent_loc;*/
 
 	update_Light_Position();
+	int tex_loc, mode_loc;
+	tex_loc = getUniformVariable(program, "textureID");
+	glUniform1iARB(tex_loc, 0);
 
-	//Access uniform variables in shader  
-	ambient_loc = getUniformVariable(program, "AmbientContribution");	
-	glUniform3fvARB(ambient_loc,1, ambient_cont);
+	mode_loc = getUniformVariable(program, "mode");
+	glUniform1iARB(mode_loc,0);//keybind to here for mode changes
 
-	diffuse_loc = getUniformVariable(program, "DiffuseContribution");
-	glUniform3fvARB(diffuse_loc,1, diffuse_cont);
+	////Access uniform variables in shaders
+	//ambient_loc = getUniformVariable(program, "AmbientContribution");	
+	//glUniform3fvARB(ambient_loc,1, ambient_cont);
 
-	specular_loc = getUniformVariable(program, "SpecularContribution");
-	glUniform3fvARB(specular_loc,1,specular_cont);
+	//diffuse_loc = getUniformVariable(program, "DiffuseContribution");
+	//glUniform3fvARB(diffuse_loc,1, diffuse_cont);
 
-	exponent_loc = getUniformVariable(program, "exponent");
-	glUniform1fARB(exponent_loc,exponent);
+	//specular_loc = getUniformVariable(program, "SpecularContribution");
+	//glUniform3fvARB(specular_loc,1,specular_cont);
 
-	//Access attributes in vertex shader
-	tangent_loc = glGetAttribLocationARB(program,"tang");
-	glVertexAttrib1fARB(tangent_loc,tangent);
+	//exponent_loc = getUniformVariable(program, "exponent");
+	//glUniform1fARB(exponent_loc,exponent);
+
+	////Access attributes in vertex shader
+	//tangent_loc = glGetAttribLocationARB(program,"tang");
+	//glVertexAttrib1fARB(tangent_loc,tangent);
 
 }
 

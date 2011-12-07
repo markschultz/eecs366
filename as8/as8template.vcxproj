@@ -100,6 +100,12 @@
     <ClInclude Include="read_tga.h" />
     <ClInclude Include="wglext.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sampleshader.frag" />
+    <None Include="sampleshader.vert" />
+    <None Include="shader.frag" />
+    <None Include="shader.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
