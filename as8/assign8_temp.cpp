@@ -344,8 +344,8 @@ void setShaders()
 	
 
 	//read the shader files and store the strings in corresponding char. arrays.
-	vs = shaderFileRead("sampleshader.vert");
-	fs = shaderFileRead("sampleshader.frag");
+	vs = shaderFileRead("shader.vert");
+	fs = shaderFileRead("shader.frag");
 
 	const char * vv = vs;
 	const char * ff = fs;
@@ -439,33 +439,39 @@ void setParameters(GLuint program)
 	int light_loc;
 	int ambient_loc,diffuse_loc,specular_loc;
 	int exponent_loc;
-	GLint tex_loc;
+	/*GLint tex_loc;
 	tex_loc = getUniformVariable(program, "textureID");
-	glUniform1iARB(tex_loc,0);
+	glUniform1iARB(tex_loc,0)*/;
 
 	//sample variable used to demonstrate how attributes are used in vertex shaders.
 	//can be defined as gloabal and can change per vertex
-	float tangent = 0.1;
-	float tangent_loc;
+	/*float tangent = 0.1;
+	float tangent_loc;*/
 
 	update_Light_Position();
+	int tex_loc, mode_loc;
+	tex_loc = getUniformVariable(program, "textureID");
+	glUniform1iARB(tex_loc, 0);
 
-	//Access uniform variables in shaders
-	ambient_loc = getUniformVariable(program, "AmbientContribution");	
-	glUniform3fvARB(ambient_loc,1, ambient_cont);
+	mode_loc = getUniformVariable(program, "mode");
+	glUniform1iARB(mode_loc,0);//keybind to here for mode changes
 
-	diffuse_loc = getUniformVariable(program, "DiffuseContribution");
-	glUniform3fvARB(diffuse_loc,1, diffuse_cont);
+	////Access uniform variables in shaders
+	//ambient_loc = getUniformVariable(program, "AmbientContribution");	
+	//glUniform3fvARB(ambient_loc,1, ambient_cont);
 
-	specular_loc = getUniformVariable(program, "SpecularContribution");
-	glUniform3fvARB(specular_loc,1,specular_cont);
+	//diffuse_loc = getUniformVariable(program, "DiffuseContribution");
+	//glUniform3fvARB(diffuse_loc,1, diffuse_cont);
 
-	exponent_loc = getUniformVariable(program, "exponent");
-	glUniform1fARB(exponent_loc,exponent);
+	//specular_loc = getUniformVariable(program, "SpecularContribution");
+	//glUniform3fvARB(specular_loc,1,specular_cont);
 
-	//Access attributes in vertex shader
-	tangent_loc = glGetAttribLocationARB(program,"tang");
-	glVertexAttrib1fARB(tangent_loc,tangent);
+	//exponent_loc = getUniformVariable(program, "exponent");
+	//glUniform1fARB(exponent_loc,exponent);
+
+	////Access attributes in vertex shader
+	//tangent_loc = glGetAttribLocationARB(program,"tang");
+	//glVertexAttrib1fARB(tangent_loc,tangent);
 
 }
 

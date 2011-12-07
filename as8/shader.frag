@@ -1,16 +1,6 @@
-/**
-	Paolo Surricchio - CS 541 assignment 2a
-*/
-
 uniform int mode;           // Set by the application to an integer 0-9.
 
-uniform sampler2D earthSampler;           // Set by the application to 0.
-uniform sampler2D effectSampler;           // Set by the application to 1.
-
-uniform sampler2D tileSampler;           // Set by the application to 2.
-uniform sampler2D tileEffectSampler;           // Set by the application to 3.
-
-uniform sampler2D reflectionSampler;           // Set by the application to 4.
+uniform sampler2D textureID;           // Set by the application to 0.
 
 varying vec3 normalVec, lightVec, eyeVec, pU;// Remember to normalize before using!
 
@@ -30,7 +20,7 @@ vec4 PhongLighting()
 		vec4 Kd = gl_FrontMaterial.diffuse;
 		vec4 Ks = gl_FrontMaterial.specular;
 		float n = gl_FrontMaterial.shininess;
-    
+	
 		//here I am normalizing normalVec, lightVec and eyeVec
 		vec3 normNormalVec = normalize(normalVec);
 		vec3 normLightVec = normalize(lightVec);
@@ -42,7 +32,7 @@ vec4 PhongLighting()
 			with the light vector. The value must be in the range: [0.0, 1.0]
 		*/
 		float nDotL = max( 0.0, dot(normNormalVec, normLightVec));
-    
+	
 		/*
 			The reflection vector is the vector used to calculate the spot of the light.
 			The formula is:
@@ -60,11 +50,11 @@ vec4 PhongLighting()
 		//Return the color of the pixel as the result of the Phong calculation
 		return ( ( Ie ) + ( Ia * Ka ) + ( Id * nDotL * Kd ) + ( Is * pow( vDotR, n ) * Ks ) );
 
-    
+	
 	}else{
 		if(mode == 2){
 			//Lookup effect texture
-			vec4 effects = texture2D(effectSampler, gl_TexCoord[0].st);
+			vec4 effects = texture2D(textureID, gl_TexCoord[0].st);
 
 			// Lookup the Light parameters
 			vec4 Ia = gl_LightSource[0].ambient + gl_LightModel.ambient;
@@ -73,11 +63,11 @@ vec4 PhongLighting()
 
 
 			// Lookup the material properties in effect for this pixel
-			vec4 Ka = texture2D(earthSampler, gl_TexCoord[0].st);
-			vec4 Kd = texture2D(earthSampler, gl_TexCoord[0].st);
+			vec4 Ka = texture2D(textureID, gl_TexCoord[0].st);
+			vec4 Kd = texture2D(textureID, gl_TexCoord[0].st);
 			vec4 Ks = gl_FrontMaterial.specular;
 			float n = gl_FrontMaterial.shininess;
-    
+	
 			//here I am normalizing normalVec, lightVec and eyeVec
 			vec3 normNormalVec = normalize(normalVec);
 			vec3 normLightVec = normalize(lightVec);
@@ -96,7 +86,7 @@ vec4 PhongLighting()
 			Ka += (effects.b * nDotL);
 			Kd += (effects.b * nDotL);
 		
-    
+	
 			/*
 				The reflection vector is the vector used to calculate the spot of the light.
 				The formula is:
@@ -121,18 +111,18 @@ vec4 PhongLighting()
 
 				const float tileFactor = 12.0;
 				float scale = 25.0;
-    
+	
 				// Lookup the Light parameters
 				vec4 Ia = gl_LightSource[0].ambient + gl_LightModel.ambient;
 				vec4 Id = gl_LightSource[0].diffuse;
 				vec4 Is = gl_LightSource[0].specular;
 
 				// Lookup the material properties in effect for this pixel
-				vec4 Ka = texture2D(tileSampler, gl_TexCoord[0].st * tileFactor);
-				vec4 Kd = texture2D(tileSampler, gl_TexCoord[0].st * tileFactor);
+				vec4 Ka = texture2D(textureID, gl_TexCoord[0].st * tileFactor);
+				vec4 Kd = texture2D(textureID, gl_TexCoord[0].st * tileFactor);
 				vec4 Ks = gl_FrontMaterial.specular;
 				float n = gl_FrontMaterial.shininess;
-    
+	
 				//here I am normalizing normalVec, lightVec and eyeVec
 				vec3 normNormalVec = normalize(normalVec);
 				vec3 normLightVec = normalize(lightVec);
@@ -167,12 +157,12 @@ vec4 PhongLighting()
 				i1j1 = vec2(i + 1.0, j + 1.0);
 
 				fu = 
-					v0 * ( texture2D(tileEffectSampler, i1j / 256.0).r - texture2D(tileEffectSampler, ij / 256.0).r ) + 
-					v1 * ( texture2D(tileEffectSampler, i1j1 / 256.0).r - texture2D(tileEffectSampler, ij1 / 256.0).r );
+					v0 * ( texture2D(textureID, i1j / 256.0).r - texture2D(textureID, ij / 256.0).r ) + 
+					v1 * ( texture2D(textureID, i1j1 / 256.0).r - texture2D(textureID, ij1 / 256.0).r );
 
 				fv =  
-					u0 * ( texture2D(tileEffectSampler, ij1 / 256.0).r - texture2D(tileEffectSampler, ij / 256.0).r ) + 
-					u1 * ( texture2D(tileEffectSampler, i1j1 / 256.0).r - texture2D(tileEffectSampler, i1j / 256.0).r);
+					u0 * ( texture2D(textureID, ij1 / 256.0).r - texture2D(textureID, ij / 256.0).r ) + 
+					u1 * ( texture2D(textureID, i1j1 / 256.0).r - texture2D(textureID, i1j / 256.0).r);
 
 				vec3 d = scale * cross( ((-fv * normPU) - (fu * normPV)), normNormalVec);
 
@@ -188,7 +178,7 @@ vec4 PhongLighting()
 					with the light vector. The value must be in the range: [0.0, 1.0]
 				*/
 				float nDotL = max( 0.0, dot(normNormalVec, normLightVec));
-    
+	
 				/*
 					The reflection vector is the vector used to calculate the spot of the light.
 					The formula is:
@@ -224,11 +214,11 @@ vec4 PhongLighting()
 				vec2 uv = vec2(u,v);
 
 				// Lookup the material properties in effect for this pixel
-				vec4 Ka = texture2D(reflectionSampler, uv);
-				vec4 Kd = texture2D(reflectionSampler, uv);
+				vec4 Ka = texture2D(textureID, uv);
+				vec4 Kd = texture2D(textureID, uv);
 				vec4 Ks = gl_FrontMaterial.specular;
 				float n = gl_FrontMaterial.shininess;
-    
+	
 				
 
 				/*
@@ -237,7 +227,7 @@ vec4 PhongLighting()
 					with the light vector. The value must be in the range: [0.0, 1.0]
 				*/
 				float nDotL = max( 0.0, dot(normNormalVec, normLightVec));
-    
+	
 				/*
 					The reflection vector is the vector used to calculate the spot of the light.
 					The formula is:

@@ -1,7 +1,3 @@
-/**
-	Paolo Surricchio - CS 541 assignment 2
-*/
-
 // gl_Normal: Model space normal
 // gl_NormalMatrix: Transforms normals Model-space ==> Eye-space
 
