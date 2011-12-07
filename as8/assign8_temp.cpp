@@ -41,7 +41,7 @@ int illimunationMode = 0;
 int shadingMode = 0;
 int lightSource = 0;
 int program=-1;
-
+int mode = 0;
 
 //Parameters for Copper (From: "Computer Graphics Using OpenGL" BY F.S. Hill, Jr.) 
 GLfloat ambient_cont [] = {0.19125,0.0735,0.0225};
@@ -210,6 +210,10 @@ void KeyboardFunc(unsigned char key, int x, int y)
 	case 'A':
 	case 'a':
 		ShowAxes = !ShowAxes;
+		if ( mode >= 4)
+			mode = 0;
+		if (mode < 4)
+			mode = mode +1;
 		break;
 	case 'Q':
 	case 'q':
@@ -456,7 +460,7 @@ void setParameters(GLuint program)
 	glUniform1iARB(tex_loc, 0);
 
 	mode_loc = getUniformVariable(program, "mode");
-	glUniform1iARB(mode_loc,0);//keybind to here for mode changes
+	glUniform1iARB(mode_loc,mode);//keybind to here for mode changes
 
 	////Access uniform variables in shaders
 	//ambient_loc = getUniformVariable(program, "AmbientContribution");	
